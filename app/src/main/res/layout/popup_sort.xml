@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="5dp"
+    android:background="@android:color/black">
+
+    <TextView
+        style="@style/TextViewLarge"
+        android:text="@string/sort"
+        android:layout_gravity="center_horizontal"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@android:color/white"/>
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp">
+        <RadioButton
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            style="@style/TextViewMedium"
+            android:layoutDirection="rtl"
+            android:gravity="left|center_vertical"
+            android:text="@string/title_one"/>
+        <RadioButton
+            android:id="@+id/artists"
+            android:layout_width="match_parent"
+            style="@style/TextViewMedium"
+            android:layoutDirection="rtl"
+            android:gravity="left|center_vertical"
+            android:text="@string/artists"/>
+        <RadioButton
+            android:id="@+id/recently_played"
+            android:layout_width="match_parent"
+            style="@style/TextViewMedium"
+            android:layoutDirection="rtl"
+            android:gravity="left|center_vertical"
+            android:text="@string/recents"/>
+        <RadioButton
+            android:id="@+id/date"
+            android:layout_width="match_parent"
+            style="@style/TextViewMedium"
+            android:layoutDirection="rtl"
+            android:gravity="left|center_vertical"
+            android:text="@string/date"/>
+        <RadioButton
+            android:id="@+id/none"
+            android:layout_width="match_parent"
+            style="@style/TextViewMedium"
+            android:layoutDirection="rtl"
+            android:gravity="left|center_vertical"
+            android:text="@string/none"/>
+    </RadioGroup>
+
+    <LinearLayout
+        android:id="@+id/bottom_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal" >
+        <Button
+            android:id="@+id/cancel"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textSize="@dimen/text_size_small"
+            android:background="@android:color/transparent"
+            android:text="@string/cancel"/>
+        <Button
+            android:id="@+id/save"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="@dimen/text_size_small"
+            android:background="@color/orange"
+            android:textColor="@android:color/white"
+            android:text="@string/save"/>
+
+    </LinearLayout>
+
+</LinearLayout>

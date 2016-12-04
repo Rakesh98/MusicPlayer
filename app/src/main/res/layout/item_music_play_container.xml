@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/transparent_background">
+
+    <RelativeLayout
+        android:id="@+id/item_play_list_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp">
+
+        <TextView
+            android:id="@+id/index"
+            style="@style/TextViewMedium"
+            android:layout_width="30dp"
+            android:layout_centerVertical="true"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginLeft="5dp"
+            android:layout_toLeftOf="@+id/drop_down"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/index">
+            <TextView
+                android:id="@+id/title"
+                style="@style/TextViewMediumBold"
+                android:maxLines="1"
+                android:ellipsize="end"
+                />
+
+            <TextView
+                android:id="@+id/sub_title"
+                style="@style/TextViewMedium"
+                android:maxLines="1"
+                android:ellipsize="end"/>
+
+            <TextView
+                android:id="@+id/time"
+                style="@style/TextViewMedium"
+                android:maxLines="1"
+                android:ellipsize="end"/>
+        </LinearLayout>
+
+
+
+        <ImageView
+            android:id="@+id/drop_down"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/drop_down_boarder_white"
+            app:srcCompat="@drawable/icon_drop_down_white" />
+    </RelativeLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp" />
+</LinearLayout>

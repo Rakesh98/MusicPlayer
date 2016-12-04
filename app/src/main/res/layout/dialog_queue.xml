@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="400dp"
+    android:orientation="vertical"
+    android:background="@android:color/black"
+    android:padding="10dp">
+
+    <TextView
+        style="@style/TextViewLarge"
+        android:text="@string/playing_now"
+        android:layout_gravity="center_horizontal"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginTop="10dp"
+        android:background="@android:color/white"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp">
+
+    </android.support.v7.widget.RecyclerView>
+
+</LinearLayout>

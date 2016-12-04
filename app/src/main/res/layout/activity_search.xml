@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:background="?attr/colorPrimary"
+        android:layout_height="?attr/actionBarSize"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:background="@android:color/white"
+            >
+            <EditText
+                android:id="@+id/search_edit_text"
+                style="@style/TextViewMedium"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_toLeftOf="@+id/search_icon"
+                android:layout_marginRight="3dp"
+                android:background="@android:color/transparent"
+                android:singleLine="true"
+                android:paddingLeft="5dp"
+                android:imeOptions="actionSearch"
+                android:textColor="@android:color/black"/>
+            <ImageView
+                android:id="@+id/search_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                app:srcCompat="@drawable/icon_search_gray"/>
+
+        </RelativeLayout>
+        </android.support.v7.widget.Toolbar>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <LinearLayout
+                android:id="@+id/album_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+                <TextView
+                    style="@style/TextViewLarge"
+                    android:text="@string/album"/>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_marginTop="2dp"
+                    android:background="@color/gray"/>
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/album_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp">
+
+                </android.support.v7.widget.RecyclerView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/song_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="10dp"
+                android:visibility="gone">
+                <TextView
+                    style="@style/TextViewLarge"
+                    android:text="@string/songs"/>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_marginTop="2dp"
+                    android:background="@color/gray"/>
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/song_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp">
+
+                </android.support.v7.widget.RecyclerView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/composer_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="10dp"
+                android:visibility="gone">
+                <TextView
+                    style="@style/TextViewLarge"
+                    android:text="@string/composer"/>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_marginTop="2dp"
+                    android:background="@color/gray"/>
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/composer_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp">
+
+                </android.support.v7.widget.RecyclerView>
+
+            </LinearLayout>
+        </LinearLayout>
+
+
+
+    </ScrollView>
+
+</LinearLayout>

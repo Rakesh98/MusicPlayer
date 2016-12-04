@@ -1,0 +1,15 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:android1="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/search"
+        android:title="@string/search"
+        android:icon="@drawable/icon_search"
+        android1:showAsAction="ifRoom"
+        />
+    <item android:id="@+id/enque"
+        android:title="@string/grid_view"
+        android:icon="@drawable/icon_queue"
+        android1:showAsAction="ifRoom"
+        />
+
+</menu>

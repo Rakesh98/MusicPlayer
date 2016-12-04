@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#E64A19</color>
+    <color name="colorPrimaryDark">#FF5722</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="defaultTextView">#333333</color>
+    <color name="secondaryTextView">#666666</color>
+    <color name="orange">#f7931e</color>
+    <color name="blue">#12b4ff</color>
+    <color name="pink">#FF69B4</color>
+    <color name="tabIndicatorColor">#FFFF</color>
+    <color name="transparent_background">#80000000</color>
+    <color name="gray">@android:color/darker_gray</color>
+</resources>
