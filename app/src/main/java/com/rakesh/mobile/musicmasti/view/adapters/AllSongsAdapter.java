@@ -116,15 +116,19 @@ public class AllSongsAdapter extends RecyclerView.Adapter<ViewHolder> {
         @Override
         public void onClick(View v) {
           queueList.clear();
-          Queue queue = new Queue();
-          if (isHeaderSet) {
-            queue.setSong(songList.get(holder.getAdapterPosition() - 1));
-          } else {
-            queue.setSong(songList.get(holder.getAdapterPosition()));
+          Queue queue;
+          for (int i = 0; i < songList.size(); i++) {
+            queue = new Queue();
+            queue.setSong(songList.get(i));
+            queueList.add(queue);
           }
-          queueList.add(queue);
+
           if(null != PlayerService.getInstance()) {
-            PlayerService.getInstance().addToQueue(queueList, true, 0);
+            if (isHeaderSet) {
+              PlayerService.getInstance().addToQueue(queueList, true, holder.getAdapterPosition()-1);
+            } else {
+              PlayerService.getInstance().addToQueue(queueList, true, holder.getAdapterPosition());
+            }
           } else {
             context.finish();
           }

@@ -1,14 +1,17 @@
-package com.rakesh.mobile.musicmasti.utils;
+package com.rakesh.mobile.musicmasti.utils.comparators;
 
 import com.rakesh.mobile.musicmasti.model.Album;
+import com.rakesh.mobile.musicmasti.utils.Configuration;
+import com.rakesh.mobile.musicmasti.utils.Constants;
+import com.rakesh.mobile.musicmasti.view.PlayerService;
 
 import java.util.Comparator;
 
 /**
- * Created by rakesh.jnanagari on 25/11/16.
+ * Created by rakesh.jnanagari on 20/11/16.
  */
 
-public class ComposerComparator implements Comparator<Album> {
+public class AlbumComparator implements Comparator<Album> {
     @Override
     public int compare(Album lhs, Album rhs) {
         if (Configuration.sortType == Constants.RECENT_SORT) {
@@ -32,7 +35,7 @@ public class ComposerComparator implements Comparator<Album> {
 
             }
             return 0;
-        } else if (Configuration.sortType == Constants.ARTISTS_SORT) {
+        } else if (Configuration.sortType == Constants.TITLE_SORT) {
             if (lhs.getTitle() != null && rhs.getTitle()!= null) {
                 return lhs.getTitle().compareTo(rhs.getTitle());
             }
@@ -41,7 +44,7 @@ public class ComposerComparator implements Comparator<Album> {
             } else {
                 return 1;
             }
-        } else if (Configuration.sortType == Constants.TITLE_SORT) {
+        } else if (Configuration.sortType == Constants.ARTISTS_SORT) {
             if (lhs.getSubTitle() != null && rhs.getSubTitle()!= null) {
                 return lhs.getSubTitle().compareTo(rhs.getSubTitle());
             }

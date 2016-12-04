@@ -15,12 +15,11 @@ import android.widget.AbsListView;
 import com.rakesh.mobile.musicmasti.R;
 import com.rakesh.mobile.musicmasti.model.Song;
 import com.rakesh.mobile.musicmasti.utils.Configuration;
-import com.rakesh.mobile.musicmasti.utils.RecentlyPlayedSongListComparator;
+import com.rakesh.mobile.musicmasti.utils.comparators.SongComparator;
 import com.rakesh.mobile.musicmasti.utils.StaticData;
 import com.rakesh.mobile.musicmasti.utils.Utils;
 import com.rakesh.mobile.musicmasti.view.HidingScrollListener;
 import com.rakesh.mobile.musicmasti.view.MusicContainer;
-import com.rakesh.mobile.musicmasti.view.Splash;
 import com.rakesh.mobile.musicmasti.view.adapters.AllSongsAdapter;
 import com.rakesh.mobile.musicmasti.view.adapters.SpacesItemDecorator;
 
@@ -110,7 +109,7 @@ public class AllSongs extends Fragment {
   }
   public void updateList() {
     if (songList != null && adapter != null) {
-      Collections.sort(songList, new RecentlyPlayedSongListComparator());
+      Collections.sort(songList, new SongComparator());
       adapter.notifyDataSetChanged();
     }
   }

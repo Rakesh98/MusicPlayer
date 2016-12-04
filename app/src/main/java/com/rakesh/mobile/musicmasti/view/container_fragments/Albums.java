@@ -17,20 +17,17 @@ import com.rakesh.mobile.musicmasti.model.Album;
 import com.rakesh.mobile.musicmasti.model.Song;
 import com.rakesh.mobile.musicmasti.utils.Configuration;
 import com.rakesh.mobile.musicmasti.utils.Constants;
-import com.rakesh.mobile.musicmasti.utils.RecentlyPlayedAlbumComparator;
+import com.rakesh.mobile.musicmasti.utils.comparators.AlbumComparator;
 import com.rakesh.mobile.musicmasti.utils.StaticData;
 import com.rakesh.mobile.musicmasti.utils.Utils;
 import com.rakesh.mobile.musicmasti.view.HidingScrollListener;
 import com.rakesh.mobile.musicmasti.view.MusicContainer;
-import com.rakesh.mobile.musicmasti.view.Splash;
 import com.rakesh.mobile.musicmasti.view.adapters.AlbumAdapter;
-import com.rakesh.mobile.musicmasti.view.adapters.AllSongsAdapter;
 import com.rakesh.mobile.musicmasti.view.adapters.SpacesItemDecorator;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -144,12 +141,12 @@ public class Albums extends Fragment {
             }
         }
         albumList = new ArrayList<>(albumMap.values());
-        Collections.sort(albumList, new RecentlyPlayedAlbumComparator());
+        Collections.sort(albumList, new AlbumComparator());
     }
 
     public void updateList () {
         if (null != albumList && null != adapter) {
-            Collections.sort(albumList, new RecentlyPlayedAlbumComparator());
+            Collections.sort(albumList, new AlbumComparator());
             adapter.notifyDataSetChanged();
         }
 

@@ -1,6 +1,9 @@
-package com.rakesh.mobile.musicmasti.utils;
+package com.rakesh.mobile.musicmasti.utils.comparators;
 
 import com.rakesh.mobile.musicmasti.model.Song;
+import com.rakesh.mobile.musicmasti.utils.Configuration;
+import com.rakesh.mobile.musicmasti.utils.Constants;
+import com.rakesh.mobile.musicmasti.utils.StaticData;
 
 import java.util.Comparator;
 
@@ -8,7 +11,7 @@ import java.util.Comparator;
  * Created by rakesh.jnanagari on 19/11/16.
  */
 
-public class RecentlyPlayedSongListComparator implements Comparator<Song> {
+public class SongComparator implements Comparator<Song> {
     @Override
     public int compare(Song lhsSong, Song rhsSong) {
         if (Configuration.sortType == Constants.RECENT_SORT) {

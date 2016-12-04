@@ -15,15 +15,13 @@ import android.widget.AbsListView;
 import com.rakesh.mobile.musicmasti.R;
 import com.rakesh.mobile.musicmasti.model.Album;
 import com.rakesh.mobile.musicmasti.model.Song;
-import com.rakesh.mobile.musicmasti.utils.ComposerComparator;
+import com.rakesh.mobile.musicmasti.utils.comparators.ComposerComparator;
 import com.rakesh.mobile.musicmasti.utils.Configuration;
 import com.rakesh.mobile.musicmasti.utils.Constants;
-import com.rakesh.mobile.musicmasti.utils.RecentlyPlayedAlbumComparator;
 import com.rakesh.mobile.musicmasti.utils.StaticData;
 import com.rakesh.mobile.musicmasti.utils.Utils;
 import com.rakesh.mobile.musicmasti.view.HidingScrollListener;
 import com.rakesh.mobile.musicmasti.view.MusicContainer;
-import com.rakesh.mobile.musicmasti.view.Splash;
 import com.rakesh.mobile.musicmasti.view.adapters.AlbumAdapter;
 import com.rakesh.mobile.musicmasti.view.adapters.SpacesItemDecorator;
 

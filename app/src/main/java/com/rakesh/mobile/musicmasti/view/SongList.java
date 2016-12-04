@@ -232,6 +232,12 @@ public class SongList extends AppCompatActivity implements PlayerService.PlayerS
         Intent intent = new Intent(SongList.this, Search.class);
         startActivity(intent);
         return true;
+      case R.id.share_app:
+        intent = new Intent(android.content.Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(android.content.Intent.EXTRA_TEXT, getString(R.string.share_app_message));
+        startActivity(intent);
+        return true;
     }
     return super.onOptionsItemSelected(item);
   }

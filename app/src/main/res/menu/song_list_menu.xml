@@ -11,5 +11,10 @@
         android:icon="@drawable/icon_queue"
         android1:showAsAction="ifRoom"
         />
+    <item android:id="@+id/share_app"
+        android:title="@string/share_app"
+        android:icon="@drawable/icon_share"
+        android1:showAsAction="ifRoom"
+        />
 
 </menu>

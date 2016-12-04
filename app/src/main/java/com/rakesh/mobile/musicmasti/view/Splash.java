@@ -23,14 +23,13 @@ import com.rakesh.mobile.musicmasti.R;
 import com.rakesh.mobile.musicmasti.model.Song;
 import com.rakesh.mobile.musicmasti.utils.Configuration;
 import com.rakesh.mobile.musicmasti.utils.Constants;
-import com.rakesh.mobile.musicmasti.utils.RecentlyPlayedSongListComparator;
+import com.rakesh.mobile.musicmasti.utils.comparators.SongComparator;
 import com.rakesh.mobile.musicmasti.utils.SharedPreference;
 import com.rakesh.mobile.musicmasti.utils.StaticData;
 import com.rakesh.mobile.musicmasti.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * Created by rakesh.jnanagari on 24/06/16.
@@ -183,7 +182,7 @@ public class Splash extends AppCompatActivity {
 
           Log.d("debug", "stop");
         }
-        Collections.sort(StaticData.songList, new RecentlyPlayedSongListComparator());
+        Collections.sort(StaticData.songList, new SongComparator());
       }
     }
     cursor.close();

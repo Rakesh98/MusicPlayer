@@ -17,8 +17,8 @@ import com.rakesh.mobile.musicmasti.model.Album;
 import com.rakesh.mobile.musicmasti.model.Song;
 import com.rakesh.mobile.musicmasti.utils.Configuration;
 import com.rakesh.mobile.musicmasti.utils.Constants;
-import com.rakesh.mobile.musicmasti.utils.RecentlyPlayedAlbumComparator;
-import com.rakesh.mobile.musicmasti.utils.RecentlyPlayedSongListComparator;
+import com.rakesh.mobile.musicmasti.utils.comparators.AlbumComparator;
+import com.rakesh.mobile.musicmasti.utils.comparators.SongComparator;
 import com.rakesh.mobile.musicmasti.utils.StaticData;
 import com.rakesh.mobile.musicmasti.view.adapters.AlbumAdapter;
 import com.rakesh.mobile.musicmasti.view.adapters.AllSongsAdapter;
@@ -176,7 +176,7 @@ public class Search extends AppCompatActivity {
             }
         }
         albumList.addAll(albumMap.values());
-        Collections.sort(albumList, new RecentlyPlayedAlbumComparator());
+        Collections.sort(albumList, new AlbumComparator());
         if (albumList.size() > 0) {
             albumContainer.setVisibility(View.VISIBLE);
         } else {
@@ -192,7 +192,7 @@ public class Search extends AppCompatActivity {
                 songList.add(StaticData.songList.get(i));
             }
         }
-        Collections.sort(songList, new RecentlyPlayedSongListComparator());
+        Collections.sort(songList, new SongComparator());
         if(songList.size() > 0) {
             songContainer.setVisibility(View.VISIBLE);
             mSongAdapter.notifyDataSetChanged();
@@ -246,7 +246,7 @@ public class Search extends AppCompatActivity {
             }
         }
         composerList.addAll(albumMap.values());
-        Collections.sort(composerList, new RecentlyPlayedAlbumComparator());
+        Collections.sort(composerList, new AlbumComparator());
         if(composerList.size() > 0) {
             composerContainer.setVisibility(View.VISIBLE);
             mComposerAdapter.notifyDataSetChanged();

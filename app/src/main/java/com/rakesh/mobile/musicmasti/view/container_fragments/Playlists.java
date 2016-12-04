@@ -18,12 +18,11 @@ import com.rakesh.mobile.musicmasti.model.Album;
 import com.rakesh.mobile.musicmasti.model.Song;
 import com.rakesh.mobile.musicmasti.utils.Configuration;
 import com.rakesh.mobile.musicmasti.utils.Constants;
-import com.rakesh.mobile.musicmasti.utils.RecentlyPlayedAlbumComparator;
+import com.rakesh.mobile.musicmasti.utils.comparators.AlbumComparator;
 import com.rakesh.mobile.musicmasti.utils.StaticData;
 import com.rakesh.mobile.musicmasti.utils.Utils;
 import com.rakesh.mobile.musicmasti.view.HidingScrollListener;
 import com.rakesh.mobile.musicmasti.view.MusicContainer;
-import com.rakesh.mobile.musicmasti.view.Splash;
 import com.rakesh.mobile.musicmasti.view.adapters.AlbumAdapter;
 import com.rakesh.mobile.musicmasti.view.adapters.SpacesItemDecorator;
 
@@ -139,7 +138,7 @@ public class Playlists extends Fragment {
             }
         }
         albumList = new ArrayList<>(albumMap.values());
-        Collections.sort(albumList, new RecentlyPlayedAlbumComparator());
+        Collections.sort(albumList, new AlbumComparator());
     }
 
     private List<Song> setSongList() {
@@ -156,7 +155,7 @@ public class Playlists extends Fragment {
 
     public void updateList () {
         if (null != albumList && null != adapter) {
-            Collections.sort(albumList, new RecentlyPlayedAlbumComparator());
+            Collections.sort(albumList, new AlbumComparator());
             adapter.notifyDataSetChanged();
         }
 
