@@ -236,8 +236,10 @@ public class MusicContainer extends AppCompatActivity
     MenuItem viewType = menu.findItem(R.id.view_type);
     if (Configuration.gridView) {
       viewType.setIcon(R.drawable.icon_head_line_view);
+      viewType.setTitle(R.string.list_view);
     } else {
       viewType.setIcon(R.drawable.icon_module_view);
+      viewType.setTitle(R.string.grid_view);
     }
     return super.onCreateOptionsMenu(menu);
   }
@@ -250,8 +252,10 @@ public class MusicContainer extends AppCompatActivity
         mSharedPreference.putSharedPrefBoolean(Constants.GRID_VIEW_KEY, Configuration.gridView);
         if (Configuration.gridView) {
           item.setIcon(R.drawable.icon_head_line_view);
+          item.setTitle(R.string.list_view);
         } else {
           item.setIcon(R.drawable.icon_module_view);
+          item.setTitle(R.string.grid_view);
         }
         playListItemViewChange();
         return true;

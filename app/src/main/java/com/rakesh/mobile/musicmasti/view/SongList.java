@@ -1,25 +1,29 @@
 package com.rakesh.mobile.musicmasti.view;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.ColorStateList;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Display;
@@ -34,6 +38,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.rakesh.mobile.musicmasti.R;
 import com.rakesh.mobile.musicmasti.model.Queue;
@@ -43,6 +48,7 @@ import com.rakesh.mobile.musicmasti.utils.StaticData;
 import com.rakesh.mobile.musicmasti.utils.Utils;
 import com.rakesh.mobile.musicmasti.view.adapters.PlayQueueAdapter;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +56,7 @@ import java.util.List;
  * Created by rakesh.jnanagari on 16/07/16.
  */
 public class SongList extends AppCompatActivity implements PlayerService.PlayerStatusUpdate {
+  private final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 2;
   private List<Song> songList;
   private long albumId;
   private RelativeLayout musicRunningBar;
@@ -59,6 +66,7 @@ public class SongList extends AppCompatActivity implements PlayerService.PlayerS
   private ImageView bottomBarStatus;
   private ImageView bottomBarSkipNext;
   private ImageView bottomBarSkipPrevious;
+  private int deleteSongPosition = -1;
 
   private PlayQueueAdapter mPlayQueueAdapter;
 
@@ -165,50 +173,55 @@ public class SongList extends AppCompatActivity implements PlayerService.PlayerS
 //          showOptionDialog(-1, false);
 //        }
 //      });
+      constructLayout();
 
-      LinearLayout songListLayout = (LinearLayout) findViewById(R.id.song_list_layout);
-      LayoutInflater mLayoutInflator =
-              (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-      for (int i = 0; i < songList.size(); i++) {
-        View view =
-                mLayoutInflator.inflate(R.layout.item_music_play_container, songListLayout, false);
-        ((TextView) view.findViewById(R.id.title)).setText(songList.get(i).getDisplayName());
-
-        ((TextView) view.findViewById(R.id.index)).setText((i + 1) + ".");
-        if (null != songList.get(i).getComposer() && !songList.get(i).getComposer().isEmpty()) {
-          ((TextView) view.findViewById(R.id.sub_title)).setText(songList.get(i).getComposer());
-        } else {
-          view.findViewById(R.id.sub_title).setVisibility(View.GONE);
-        }
-        ((TextView) view.findViewById(R.id.time))
-                .setText(getString(R.string.duration) + " " + Utils.milliSecondsToTimer(Long.parseLong(songList.get(i).getDuration())));
-        view.findViewById(R.id.item_play_list_container)
-                .setBackgroundColor(getIntent().getIntExtra(Constants.ITEM_COLOR_KEY, 0));
-        final int selectedSong = i;
-        view.setOnClickListener(new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            List<Queue> songQueue = new ArrayList<>();
-            for (int k = 0; k < songList.size(); k++) {
-              Queue queue = new Queue();
-              queue.setSong(songList.get(k));
-              songQueue.add(queue);
-
-            }
-            PlayerService.getInstance().addToQueue(songQueue, true, selectedSong);
-          }
-        });
-        view.findViewById(R.id.drop_down).setOnClickListener(new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            showOptionDialog(selectedSong, true);
-          }
-        });
-        songListLayout.addView(view);
-      }
       PlayerService.getInstance().setSongListUpdateLisitner(this);
     } else {
       finish();
+    }
+  }
+
+  private void constructLayout () {
+    LinearLayout songListLayout = (LinearLayout) findViewById(R.id.song_list_layout);
+    LayoutInflater mLayoutInflator =
+            (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    songListLayout.removeAllViews();
+    for (int i = 0; i < songList.size(); i++) {
+      View view =
+              mLayoutInflator.inflate(R.layout.item_music_play_container, songListLayout, false);
+      ((TextView) view.findViewById(R.id.title)).setText(songList.get(i).getDisplayName());
+
+      ((TextView) view.findViewById(R.id.index)).setText((i + 1) + ".");
+      if (null != songList.get(i).getComposer() && !songList.get(i).getComposer().isEmpty()) {
+        ((TextView) view.findViewById(R.id.sub_title)).setText(songList.get(i).getComposer());
+      } else {
+        view.findViewById(R.id.sub_title).setVisibility(View.GONE);
+      }
+      ((TextView) view.findViewById(R.id.time))
+              .setText(getString(R.string.duration) + " " + Utils.milliSecondsToTimer(Long.parseLong(songList.get(i).getDuration())));
+      view.findViewById(R.id.item_play_list_container)
+              .setBackgroundColor(getIntent().getIntExtra(Constants.ITEM_COLOR_KEY, 0));
+      final int selectedSong = i;
+      view.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          List<Queue> songQueue = new ArrayList<>();
+          for (int k = 0; k < songList.size(); k++) {
+            Queue queue = new Queue();
+            queue.setSong(songList.get(k));
+            songQueue.add(queue);
+
+          }
+          PlayerService.getInstance().addToQueue(songQueue, true, selectedSong);
+        }
+      });
+      view.findViewById(R.id.drop_down).setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          showOptionDialog(selectedSong, true);
+        }
+      });
+      songListLayout.addView(view);
     }
   }
 
@@ -313,6 +326,9 @@ public class SongList extends AppCompatActivity implements PlayerService.PlayerS
     lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
     dialog.getWindow().setAttributes(lp);
     dialog.show();
+    if (isParticularSong) {
+      dialog.findViewById(R.id.set_as_ringtone_layout).setVisibility(View.VISIBLE);
+    }
     dialog.findViewById(R.id.enque_layout).setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
@@ -358,7 +374,14 @@ public class SongList extends AppCompatActivity implements PlayerService.PlayerS
     dialog.findViewById(R.id.delete_layout).setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-
+        deleteSongPosition = position;
+        if (ContextCompat.checkSelfPermission(SongList.this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+          showPermissionDialog();
+        } else {
+          deleteSong();
+        }
+        dialog.dismiss();
       }
     });
     dialog.findViewById(R.id.add_to_playlist).setOnClickListener(new View.OnClickListener() {
@@ -480,7 +503,7 @@ public class SongList extends AppCompatActivity implements PlayerService.PlayerS
   private void showInfoDialog(Song song) {
     final Dialog dialog = new Dialog(this);
     dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-    dialog.setContentView(R.layout.popup_info);
+    dialog.setContentView(R.layout.popup_info_song);
 
     dialog.setCanceledOnTouchOutside(true);
     dialog.setCancelable(true);
@@ -501,5 +524,77 @@ public class SongList extends AppCompatActivity implements PlayerService.PlayerS
 
   }
 
+  private void deleteSong() {
+    if (deleteSongPosition == -1) {
+      return;
+    } else if (-2 == deleteSongPosition) {
+      for (int i = 0; i < songList.size(); i++) {
+        File file = new File(songList.get(i).getContentUri().toString());
+        boolean deleteFlag = file.delete();
+        if (deleteFlag) {
+          songList.remove(deleteSongPosition);
+          StaticData.songList.remove(songList.get(i));
+          constructLayout();
+        }
+        if (songList.size() == 0) {
+          finish();
+        }
+      }
 
+    } else {
+      File file = new File(songList.get(deleteSongPosition).getContentUri().toString());
+      if (file.exists()) {
+        boolean deleteFlag = file.delete();
+        if (deleteFlag) {
+          songList.remove(deleteSongPosition);
+          StaticData.songList.remove(songList.get(deleteSongPosition));
+          constructLayout();
+        }
+        if (songList.size() == 0) {
+          finish();
+        }
+      }
+    }
+    deleteSongPosition = -1;
+  }
+
+  private void showPermissionDialog() {
+    AlertDialog dialog = new AlertDialog.Builder(this).setTitle(getString(R.string.permission_dialog_title))
+            .setMessage(getString(R.string.permission_dialog_message))
+            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+              public void onClick(DialogInterface dialog, int which) {
+                ActivityCompat.requestPermissions(SongList.this,
+                        new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+              }
+            }).setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+      public void onClick(DialogInterface dialog, int which) {
+        deleteSongPosition = -1;
+        Toast.makeText(getApplicationContext(), getString(R.string.permission_denied_error_message),
+                Toast.LENGTH_LONG).show();
+      }
+    }).setIcon(android.R.drawable.ic_dialog_alert).show();
+    dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+      @Override
+      public void onCancel(DialogInterface dialog) {
+        deleteSongPosition = -1;
+      }
+    });
+  }
+
+  @Override
+  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    if (MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE == requestCode) {
+      if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        Toast.makeText(getApplicationContext(), getString(R.string.permission_granted_thank_message),
+                Toast.LENGTH_SHORT).show();
+        deleteSong();
+      } else {
+        Toast.makeText(getApplicationContext(), getString(R.string.permission_denied_error_message),
+                Toast.LENGTH_LONG).show();
+        finish();
+      }
+    }
+  }
 }

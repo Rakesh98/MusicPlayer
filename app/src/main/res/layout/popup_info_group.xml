@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="15dp"
+    android:background="@android:color/black">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView style="@style/TextViewLarge"
+            android:text="@string/details"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_marginTop="3dp">
+            <TextView
+                style="@style/TextViewMedium"
+                android:text="@string/album"/>
+            <TextView
+                android:id="@+id/album"
+                style="@style/TextViewMediumBold" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_marginTop="3dp">
+            <TextView
+                style="@style/TextViewMedium"
+                android:text="@string/artist"/>
+            <TextView
+                android:id="@+id/artist"
+                style="@style/TextViewMediumBold" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_marginTop="3dp">
+            <TextView
+                style="@style/TextViewMedium"
+                android:text="@string/composer"/>
+            <TextView
+                android:id="@+id/composer"
+                style="@style/TextViewMediumBold" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_marginTop="3dp">
+            <TextView
+                style="@style/TextViewMedium"
+                android:text="@string/size"/>
+            <TextView
+                android:id="@+id/size"
+                style="@style/TextViewMediumBold" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_marginTop="3dp">
+            <TextView
+                style="@style/TextViewMedium"
+                android:text="@string/duration"/>
+            <TextView
+                android:id="@+id/duration"
+                style="@style/TextViewMediumBold" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_marginTop="3dp">
+            <TextView
+                style="@style/TextViewMedium"
+                android:text="@string/tracks"/>
+            <TextView
+                android:id="@+id/tracks"
+                style="@style/TextViewMediumBold" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/ok_button"
+            style="@style/TextViewLarge"
+            android:layout_gravity="end"
+            android:background="@android:color/transparent"
+            android:textColor="@color/orange"
+            android:text="@string/ok"/>
+
+
+    </LinearLayout>
+</ScrollView>

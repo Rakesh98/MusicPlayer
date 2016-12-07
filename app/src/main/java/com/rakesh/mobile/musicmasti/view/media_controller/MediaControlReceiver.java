@@ -9,7 +9,7 @@ import android.view.KeyEvent;
 import com.rakesh.mobile.musicmasti.view.PlayerService;
 
 /**
- * Created by rakesh.jnanagari on 20/11/16.
+ * Created by rakesh.jnanagari on 20/11/16. This class handles all media events from system.
  */
 
 public class MediaControlReceiver extends BroadcastReceiver {

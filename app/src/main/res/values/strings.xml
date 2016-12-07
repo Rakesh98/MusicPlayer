@@ -61,4 +61,6 @@
     <string name="none">None</string>
     <string name="title_one">Title</string>
     <string name="date">Date</string>
+    <string name="tracks">Tracks:&#160;</string>
+    <string name="remove_from_playlist">Remove from Playlist</string>
 </resources>

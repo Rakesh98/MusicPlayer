@@ -28,7 +28,7 @@
                 android:layout_gravity="center_horizontal"/>
         </LinearLayout>
         <LinearLayout
-            android:id="@+id/set_as_ringtone_layout"
+            android:id="@+id/add_to_playlist"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -37,14 +37,15 @@
             <ImageView
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                app:srcCompat="@drawable/icon_ringtone"
-                android:layout_gravity="center_horizontal"/>
+                android:layout_gravity="center_horizontal"
+                app:srcCompat="@drawable/icon_play_list"/>
             <TextView
-                style="@style/TextViewSmall"
+                style="@style/TextViewMedium"
+                android:text="@string/add_to_playlist"
                 android:gravity="center_horizontal"
-                android:text="@string/set_ringtone"
                 android:layout_gravity="center_horizontal"/>
         </LinearLayout>
+
         <LinearLayout
             android:id="@+id/share_layout"
             android:layout_width="0dp"
@@ -102,29 +103,32 @@
                 android:layout_gravity="center_horizontal"
                 app:srcCompat="@drawable/icon_delete"/>
             <TextView
+                android:id="@+id/remove"
                 style="@style/TextViewMedium"
                 android:text="@string/delete"
                 android:layout_gravity="center_horizontal"
                 android:gravity="center_horizontal"/>
         </LinearLayout>
         <LinearLayout
-            android:id="@+id/add_to_playlist"
+            android:id="@+id/set_as_ringtone_layout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/ripple_effect_list"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="invisible">
             <ImageView
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:layout_gravity="center_horizontal"
-                app:srcCompat="@drawable/icon_play_list"/>
+                app:srcCompat="@drawable/icon_ringtone"
+                android:layout_gravity="center_horizontal"/>
             <TextView
-                style="@style/TextViewMedium"
-                android:text="@string/add_to_playlist"
+                style="@style/TextViewSmall"
                 android:gravity="center_horizontal"
+                android:text="@string/set_ringtone"
                 android:layout_gravity="center_horizontal"/>
         </LinearLayout>
+
 
         <View
             android:layout_width="0dp"

@@ -211,7 +211,7 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
       return;
     if (mQueue.size() == 0) {
       mQueue.addAll(queueList);
-      if (-1 == playingSongPosition)
+      if (-1 == position)
         playingSongPosition = 0;
       else
         playingSongPosition = position;
@@ -610,9 +610,10 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
 
   public void cancelNotification() {
     if (!isPlayerPlaying()) {
-      if (mNotificationManager != null) {
-        mNotificationManager.cancel(NOTIFICATION_ID);
+      if (mNotificationManager == null) {
+        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
       }
+      mNotificationManager.cancel(NOTIFICATION_ID);
     }
   }
 

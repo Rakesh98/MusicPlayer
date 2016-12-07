@@ -26,6 +26,7 @@ import android.widget.TextView;
 import com.rakesh.mobile.musicmasti.R;
 import com.rakesh.mobile.musicmasti.model.Song;
 import com.rakesh.mobile.musicmasti.utils.Constants;
+import com.rakesh.mobile.musicmasti.utils.StaticData;
 import com.rakesh.mobile.musicmasti.utils.Utils;
 import com.rakesh.mobile.musicmasti.view.adapters.PlayQueueAdapter;
 
@@ -58,6 +59,12 @@ public class NowPlaying extends AppCompatActivity implements PlayerService.NowPl
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_now_playing);
     isActivityDestroyed = false;
+    if (StaticData.songList == null || StaticData.songList.isEmpty()) {
+      startActivity(new Intent(this, Splash.class));
+      PlayerService.getInstance().cancelNotification();
+      finish();
+      return;
+    }
     if(null != PlayerService.getInstance()) {
       titleTextView = (TextView) findViewById(R.id.title);
       songTextView = (TextView) findViewById(R.id.song);

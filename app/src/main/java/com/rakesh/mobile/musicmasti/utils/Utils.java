@@ -3,6 +3,7 @@ package com.rakesh.mobile.musicmasti.utils;
 import android.app.Activity;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
@@ -263,6 +264,16 @@ public class Utils {
       activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
     } else {
       activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+    }
+  }
+
+  public static void shareFiles(Context context, ArrayList<Uri> files) {
+    if (context != null && files != null && !files.isEmpty()) {
+      Intent intent = new Intent();
+      intent.setAction(Intent.ACTION_SEND_MULTIPLE);
+      intent.setType("*/*"); /* This example is sharing jpeg images. */
+      intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, files);
+      context.startActivity(intent);
     }
   }
 }

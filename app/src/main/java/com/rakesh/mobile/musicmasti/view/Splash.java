@@ -118,11 +118,13 @@ public class Splash extends AppCompatActivity {
             ActivityCompat.requestPermissions(sourceContext,
                 new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
                 MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+            dialog.dismiss();
           }
         }).setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
           public void onClick(DialogInterface dialog, int which) {
             Toast.makeText(sourceContext, getString(R.string.permission_denied_error_message),
                 Toast.LENGTH_LONG).show();
+            dialog.dismiss();
             finish();
           }
         }).setIcon(android.R.drawable.ic_dialog_alert).show();
@@ -227,12 +229,12 @@ public class Splash extends AppCompatActivity {
       Configuration.potrateListCount = 1;
       Configuration.landscapeListCount = 1;
     } else if (diagonalInches < 5) {
-      Configuration.potrateGridCount = 3;
+      Configuration.potrateGridCount = 2;
       Configuration.landscapeGridCount = 5;
       Configuration.potrateListCount = 1;
       Configuration.landscapeListCount = 2;
     } else if (diagonalInches <= 6.5) {
-      Configuration.potrateGridCount = 3;
+      Configuration.potrateGridCount = 2;
       Configuration.landscapeGridCount = 5;
       Configuration.potrateListCount = 1;
       Configuration.landscapeListCount = 2;
@@ -258,5 +260,10 @@ public class Splash extends AppCompatActivity {
     Configuration.isShakeSongSkipEnabled = mSharedPreference.getSharedPrefBoolean(Constants.IS_SHAKE_SKIP_SONG_KEY, false);
     Configuration.isHeadSetControlEnabled = mSharedPreference.getSharedPrefBoolean(Constants.IS_HEAD_SET_CONTROL_KEY, true);
     Configuration.sortType = mSharedPreference.getSharedPrefInt(Constants.SORT_KEY);
+  }
+
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
   }
 }
