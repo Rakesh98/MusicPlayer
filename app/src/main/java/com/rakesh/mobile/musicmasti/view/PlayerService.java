@@ -1,5 +1,28 @@
 package com.rakesh.mobile.musicmasti.view;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.NotificationTarget;
+import com.rakesh.mobile.musicmasti.AppController;
+import com.rakesh.mobile.musicmasti.R;
+import com.rakesh.mobile.musicmasti.model.Queue;
+import com.rakesh.mobile.musicmasti.model.Song;
+import com.rakesh.mobile.musicmasti.utils.Configuration;
+import com.rakesh.mobile.musicmasti.utils.Constants;
+import com.rakesh.mobile.musicmasti.utils.ShakeDetector;
+import com.rakesh.mobile.musicmasti.utils.StaticData;
+import com.rakesh.mobile.musicmasti.utils.Utils;
+import com.rakesh.mobile.musicmasti.view.media_controller.MediaControlReceiver;
+import com.rakesh.mobile.musicmasti.view.notification_controller.CloseReceiver;
+import com.rakesh.mobile.musicmasti.view.notification_controller.NotificationStatusReceiver;
+import com.rakesh.mobile.musicmasti.view.notification_controller.SkipNextReceiver;
+import com.rakesh.mobile.musicmasti.view.notification_controller.SkipPreviousReceiver;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -10,7 +33,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.Sensor;
-import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -22,29 +44,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.view.View;
 import android.widget.RemoteViews;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.NotificationTarget;
-import com.rakesh.mobile.musicmasti.R;
-import com.rakesh.mobile.musicmasti.model.Queue;
-import com.rakesh.mobile.musicmasti.model.Song;
-import com.rakesh.mobile.musicmasti.utils.Configuration;
-import com.rakesh.mobile.musicmasti.utils.Constants;
-import com.rakesh.mobile.musicmasti.utils.ShakeDetector;
-import com.rakesh.mobile.musicmasti.utils.SharedPreference;
-import com.rakesh.mobile.musicmasti.utils.StaticData;
-import com.rakesh.mobile.musicmasti.utils.Utils;
-import com.rakesh.mobile.musicmasti.view.media_controller.MediaControlReceiver;
-import com.rakesh.mobile.musicmasti.view.notification_controller.CloseReceiver;
-import com.rakesh.mobile.musicmasti.view.notification_controller.NotificationStatusReceiver;
-import com.rakesh.mobile.musicmasti.view.notification_controller.SkipNextReceiver;
-import com.rakesh.mobile.musicmasti.view.notification_controller.SkipPreviousReceiver;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
 
 /**
  * Created by rakesh.jnanagari on 17/07/16.
@@ -97,13 +96,13 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
     mAudioManager.requestAudioFocus(new AudioManager.OnAudioFocusChangeListener() {
       @Override
       public void onAudioFocusChange(int focusChange) {
-        if(focusChange<=0) {
-          if(isPlayerPlaying()) {
+        if (focusChange <= 0) {
+          if (isPlayerPlaying()) {
             audioManagerFlag = true;
           }
           pause();
         } else {
-          if(audioManagerFlag) {
+          if (audioManagerFlag) {
             resume();
             audioManagerFlag = false;
           }
@@ -127,14 +126,16 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
   public void registerHeadSetController() {
     if (null != context) {
       AudioManager mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-      mAudioManager.registerMediaButtonEventReceiver(new ComponentName(context, MediaControlReceiver.class));
+      mAudioManager
+          .registerMediaButtonEventReceiver(new ComponentName(context, MediaControlReceiver.class));
     }
   }
 
   public void unRegisterHeadSetController() {
     if (null != context) {
       AudioManager mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-      mAudioManager.unregisterMediaButtonEventReceiver(new ComponentName(context, MediaControlReceiver.class));
+      mAudioManager.unregisterMediaButtonEventReceiver(
+          new ComponentName(context, MediaControlReceiver.class));
     }
   }
 
@@ -246,15 +247,17 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
         mMediaPlayer.start();
         mQueue.get(playingSongPosition).setPlayed(true);
         songProgress = 0;
-        if (StaticData.getRecentlyPlayed().contains(mQueue.get(playingSongPosition).getSong().getId())) {
-          StaticData.getRecentlyPlayed().remove(new Integer(mQueue.get(playingSongPosition).getSong().getId()));
+        if (StaticData.getRecentlyPlayed()
+            .contains(mQueue.get(playingSongPosition).getSong().getId())) {
+          StaticData.getRecentlyPlayed()
+              .remove(new Integer(mQueue.get(playingSongPosition).getSong().getId()));
         }
         StaticData.getRecentlyPlayed().add(0, mQueue.get(playingSongPosition).getSong().getId());
         if (StaticData.getRecentlyPlayed().size() >= Configuration.RECENTLY_PLAYED_STORE_LIMIT) {
           StaticData.getRecentlyPlayed().remove(StaticData.getRecentlyPlayed().size() - 1);
         }
-        SharedPreference.getInstance(context).putSharedPref(Constants.RECENTLY_PLAYED_KEY, Utils.listToString(StaticData.getRecentlyPlayed()));
-
+        AppController.getInstance().mDBManager
+            .setRecentlyPlayedList(StaticData.getRecentlyPlayed());
       } catch (IOException e) {
         e.printStackTrace();
       }
@@ -267,27 +270,28 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
   public void updateBottomLayout() {
     boolean next = false;
     boolean previous = false;
-    if(-1 != playingSongPosition) {
+    if (-1 != playingSongPosition) {
       next = playingSongPosition < mQueue.size() - 1;
       previous = playingSongPosition > 0;
     }
-    if(null != mPlayerStatusUpdate) {
+    if (null != mPlayerStatusUpdate) {
       if (-1 != playingSongPosition) {
         mPlayerStatusUpdate.playingSongStatus(mQueue.get(playingSongPosition), next, previous);
       } else {
         mPlayerStatusUpdate.playingSongStatus(null, false, false);
       }
     }
-    if(null != mPlayerStatusUpdateSongList) {
+    if (null != mPlayerStatusUpdateSongList) {
       if (-1 != playingSongPosition) {
-        mPlayerStatusUpdateSongList.playingSongStatus(mQueue.get(playingSongPosition), next, previous);
+        mPlayerStatusUpdateSongList.playingSongStatus(mQueue.get(playingSongPosition), next,
+            previous);
       } else {
         mPlayerStatusUpdateSongList.playingSongStatus(null, false, false);
       }
     }
-    if(null != mNowPlayingInterface && -1 != playingSongPosition) {
+    if (null != mNowPlayingInterface && -1 != playingSongPosition) {
       mNowPlayingInterface.updateSong(mQueue.get(playingSongPosition).getSong(), next, previous);
-      if(null != mUpdateTimeTask) {
+      if (null != mUpdateTimeTask) {
         mHandler.postDelayed(mUpdateTimeTask, 100);
       }
     }
@@ -300,8 +304,8 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
       updateBottomLayout();
       updateNotification();
     }
-    if(null != mNowPlayingInterface) {
-      if(null != mUpdateTimeTask) {
+    if (null != mNowPlayingInterface) {
+      if (null != mUpdateTimeTask) {
         mHandler.postDelayed(mUpdateTimeTask, 100);
       }
     }
@@ -316,8 +320,8 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
     } else {
       playSong();
     }
-    if(null != mNowPlayingInterface) {
-      if(null != mUpdateTimeTask) {
+    if (null != mNowPlayingInterface) {
+      if (null != mUpdateTimeTask) {
         mHandler.postDelayed(mUpdateTimeTask, 100);
       }
     }
@@ -354,7 +358,7 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
     mHandler.postDelayed(new Runnable() {
       @Override
       public void run() {
-        if(-1 != playingSongPosition) {
+        if (-1 != playingSongPosition) {
           mQueue.get(playingSongPosition).setPlayed(true);
           if (playingSongPosition < mQueue.size() - 1) {
             playingSongPosition++;
@@ -375,7 +379,7 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
   }
 
   public int getSeekPosition() {
-   return  mMediaPlayer.getDuration();
+    return mMediaPlayer.getDuration();
   }
 
   public void setPlayerStatusUpdateLisitner(PlayerStatusUpdate playerStatus) {
@@ -417,7 +421,7 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
 
   public void setmNowPlayingInterface(NowPlayingInterface nowPlayingInterface) {
     mNowPlayingInterface = nowPlayingInterface;
-    if(-1 != playingSongPosition) {
+    if (-1 != playingSongPosition) {
       updateBottomLayout();
       updateNotification();
     }
@@ -425,15 +429,15 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
       public void run() {
         long totalDuration = mMediaPlayer.getDuration();
         long currentDuration = mMediaPlayer.getCurrentPosition();
-        if(null != mNowPlayingInterface) {
+        if (null != mNowPlayingInterface) {
           mNowPlayingInterface.updateSongProgress(currentDuration, totalDuration);
-          if(isPlayerPlaying()) {
+          if (isPlayerPlaying()) {
             mHandler.postDelayed(this, 1000);
           }
         }
       }
     };
-    if(isPlayerPlaying()) {
+    if (isPlayerPlaying()) {
       mHandler.postDelayed(mUpdateTimeTask, 1000);
     }
   }
@@ -475,41 +479,44 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
 
   public interface NowPlayingInterface {
     void updateSong(Song song, boolean enableNext, boolean enablePrevious);
+
     void updateSongProgress(long currentTime, long endTime);
   }
 
   private void initNotification() {
     remoteViews = new RemoteViews(getPackageName(), R.layout.notification_layout);
     mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-    expandedView =
-            new RemoteViews(context.getPackageName(), R.layout.notification_layout_expanded);
+    expandedView = new RemoteViews(context.getPackageName(), R.layout.notification_layout_expanded);
 
   }
 
   private void updateNotification() {
     if (-1 != playingSongPosition) {
       remoteViews.setTextViewText(R.id.title,
-              mQueue.get(playingSongPosition).getSong().getDisplayName());
+          mQueue.get(playingSongPosition).getSong().getDisplayName());
       Intent resultIntent = new Intent(context, NowPlaying.class);
       resultIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
       PendingIntent resultPendingIntent =
-              PendingIntent.getActivity(context, 0, resultIntent,
-                      PendingIntent.FLAG_UPDATE_CURRENT);
+          PendingIntent.getActivity(context, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
       Intent playIntent = new Intent();
       playIntent.setAction(Constants.PACKAGE_NAME + Constants.NOTIFICATION_PLAY_STATUS);
-      PendingIntent playPendingIntent = PendingIntent.getBroadcast(context, 1, playIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+      PendingIntent playPendingIntent =
+          PendingIntent.getBroadcast(context, 1, playIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
       Intent nextIntent = new Intent();
       nextIntent.setAction(Constants.PACKAGE_NAME + Constants.NOTIFICATION_NEXT);
-      PendingIntent nextPendingIntent = PendingIntent.getBroadcast(context, 2, nextIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+      PendingIntent nextPendingIntent =
+          PendingIntent.getBroadcast(context, 2, nextIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
       Intent previousIntent = new Intent();
       previousIntent.setAction(Constants.PACKAGE_NAME + Constants.NOTIFICATION_PREVIOUS);
-      PendingIntent previousPendingIntent = PendingIntent.getBroadcast(context, 3, previousIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+      PendingIntent previousPendingIntent =
+          PendingIntent.getBroadcast(context, 3, previousIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
       Intent closeIntent = new Intent();
       closeIntent.setAction(Constants.PACKAGE_NAME + Constants.NOTIFICATION_CLOSE);
-      PendingIntent closePendingIntent = PendingIntent.getBroadcast(context, 4, closeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+      PendingIntent closePendingIntent =
+          PendingIntent.getBroadcast(context, 4, closeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
       remoteViews.setOnClickPendingIntent(R.id.skip_previous_song, previousPendingIntent);
       remoteViews.setOnClickPendingIntent(R.id.skip_next_song, nextPendingIntent);
@@ -525,12 +532,12 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
         remoteViews.setViewVisibility(R.id.close_notification, View.VISIBLE);
       }
 
-      if(playingSongPosition == 0) {
+      if (playingSongPosition == 0) {
         remoteViews.setViewVisibility(R.id.skip_previous_song, View.INVISIBLE);
       } else {
         remoteViews.setViewVisibility(R.id.skip_previous_song, View.VISIBLE);
       }
-      if(playingSongPosition == mQueue.size() - 1) {
+      if (playingSongPosition == mQueue.size() - 1) {
         remoteViews.setViewVisibility(R.id.skip_next_song, View.INVISIBLE);
       } else {
         remoteViews.setViewVisibility(R.id.skip_next_song, View.VISIBLE);
@@ -540,22 +547,22 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
       builder.setSmallIcon(R.drawable.music_icon);
       builder.setAutoCancel(false);
       builder.setPriority(Notification.PRIORITY_MAX);
-      if(isPlayerPlaying()) {
+      if (isPlayerPlaying()) {
         builder.setOngoing(true);
       }
       notification = builder.build();
       notification.contentView = remoteViews;
       remoteViews.setImageViewResource(R.id.notification_image, R.drawable.music_icon);
       Uri uriPath = ContentUris.withAppendedId(Utils.ART_WORK_URI,
-              mQueue.get(playingSongPosition).getSong().getAlbumId());
+          mQueue.get(playingSongPosition).getSong().getAlbumId());
 
       if (Build.VERSION.SDK_INT >= 16) {
         // Inflate and set the layout for the expanded notification view
         expandedView.setImageViewResource(R.id.notification_image, R.drawable.music_icon);
         expandedView.setTextViewText(R.id.title,
-                mQueue.get(playingSongPosition).getSong().getAlbum());
+            mQueue.get(playingSongPosition).getSong().getAlbum());
         expandedView.setTextViewText(R.id.sub_title,
-                mQueue.get(playingSongPosition).getSong().getDisplayName());
+            mQueue.get(playingSongPosition).getSong().getDisplayName());
         if (isPlayerPlaying()) {
           expandedView.setImageViewResource(R.id.status_song, R.drawable.notification_pause);
           expandedView.setViewVisibility(R.id.close_notification, View.INVISIBLE);
@@ -564,12 +571,12 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
           expandedView.setViewVisibility(R.id.close_notification, View.VISIBLE);
         }
 
-        if(playingSongPosition == 0) {
+        if (playingSongPosition == 0) {
           expandedView.setViewVisibility(R.id.skip_previous_song, View.INVISIBLE);
         } else {
           expandedView.setViewVisibility(R.id.skip_previous_song, View.VISIBLE);
         }
-        if(playingSongPosition == mQueue.size() - 1) {
+        if (playingSongPosition == mQueue.size() - 1) {
           expandedView.setViewVisibility(R.id.skip_next_song, View.INVISIBLE);
         } else {
           expandedView.setViewVisibility(R.id.skip_next_song, View.VISIBLE);
@@ -580,11 +587,12 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
         expandedView.setOnClickPendingIntent(R.id.close_notification, closePendingIntent);
         notification.bigContentView = expandedView;
         notificationTarget = new NotificationTarget(context, expandedView, R.id.notification_image,
-                notification, NOTIFICATION_ID);
-        Glide.with(context.getApplicationContext()).load(uriPath).asBitmap().into(notificationTarget);
+            notification, NOTIFICATION_ID);
+        Glide.with(context.getApplicationContext()).load(uriPath).asBitmap()
+            .into(notificationTarget);
       }
       notificationTarget = new NotificationTarget(context, remoteViews, R.id.notification_image,
-              notification, NOTIFICATION_ID);
+          notification, NOTIFICATION_ID);
       mNotificationManager.notify(NOTIFICATION_ID, notification);
       Glide.with(context.getApplicationContext()).load(uriPath).asBitmap().into(notificationTarget);
     } else {
@@ -618,22 +626,22 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
   }
 
   public void registerShakeLisitner() {
-    if(null != context) {
+    if (null != context) {
       // ShakeDetector initialization
       mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-      mAccelerometer = mSensorManager
-              .getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+      mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
       mShakeDetector = new ShakeDetector();
       mShakeDetector.setOnShakeListener(new ShakeDetector.OnShakeListener() {
 
         @Override
         public void onShake(int count) {
-          if(isPlayerPlaying()) {
+          if (isPlayerPlaying()) {
             skipSong(true);
           }
         }
       });
-      mSensorManager.registerListener(mShakeDetector, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
+      mSensorManager.registerListener(mShakeDetector, mAccelerometer,
+          SensorManager.SENSOR_DELAY_UI);
     }
   }
 
@@ -649,11 +657,11 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
   public void changeVolume(boolean increase) {
     AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
     if (increase) {
-      audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC,
-              AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
+      audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE,
+          AudioManager.FLAG_SHOW_UI);
     } else {
-      audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC,
-              AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI);
+      audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER,
+          AudioManager.FLAG_SHOW_UI);
     }
   }
 }

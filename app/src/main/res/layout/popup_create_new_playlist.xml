@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/dialog_min_width"
+    android:layout_height="wrap_content"
+    android:background="@android:color/black"
+    android:orientation="vertical"
+    android:padding="5dp">
+
+    <TextView
+        style="@style/TextViewLarge"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/enter_playlist_name" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@android:color/white" />
+
+    <EditText
+        style="@style/TextViewMedium"
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:background="@android:color/white"/>
+
+
+    <include layout="@layout/support_bottom_layout"/>
+
+</LinearLayout>

@@ -1,11 +1,26 @@
 package com.rakesh.mobile.musicmasti.view;
 
+import java.util.List;
+
+import com.rakesh.mobile.musicmasti.R;
+import com.rakesh.mobile.musicmasti.utils.Configuration;
+import com.rakesh.mobile.musicmasti.utils.Constants;
+import com.rakesh.mobile.musicmasti.utils.SharedPreference;
+import com.rakesh.mobile.musicmasti.utils.Utils;
+import com.rakesh.mobile.musicmasti.view.adapters.PlayQueueAdapter;
+import com.rakesh.mobile.musicmasti.view.adapters.ViewPagerAdapter;
+import com.rakesh.mobile.musicmasti.view.adapters.ViewPagerTransformer;
+import com.rakesh.mobile.musicmasti.view.container_fragments.Albums;
+import com.rakesh.mobile.musicmasti.view.container_fragments.AllSongs;
+import com.rakesh.mobile.musicmasti.view.container_fragments.Composer;
+import com.rakesh.mobile.musicmasti.view.container_fragments.FloationButtonStatus;
+import com.rakesh.mobile.musicmasti.view.container_fragments.Playlists;
+
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.ColorStateList;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Build;
@@ -37,24 +52,6 @@ import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.rakesh.mobile.musicmasti.R;
-
-import com.rakesh.mobile.musicmasti.utils.Configuration;
-import com.rakesh.mobile.musicmasti.utils.Constants;
-import com.rakesh.mobile.musicmasti.utils.SharedPreference;
-import com.rakesh.mobile.musicmasti.utils.StaticData;
-import com.rakesh.mobile.musicmasti.utils.Utils;
-import com.rakesh.mobile.musicmasti.view.adapters.PlayQueueAdapter;
-import com.rakesh.mobile.musicmasti.view.adapters.ViewPagerAdapter;
-import com.rakesh.mobile.musicmasti.view.adapters.ViewPagerTransformer;
-import com.rakesh.mobile.musicmasti.view.container_fragments.Albums;
-import com.rakesh.mobile.musicmasti.view.container_fragments.AllSongs;
-import com.rakesh.mobile.musicmasti.view.container_fragments.FloationButtonStatus;
-import com.rakesh.mobile.musicmasti.view.container_fragments.Composer;
-import com.rakesh.mobile.musicmasti.view.container_fragments.Playlists;
-
-import java.util.List;
 
 /**
  * Created by rakesh.jnanagari on 24/06/16.
@@ -107,7 +104,7 @@ public class MusicContainer extends AppCompatActivity
       mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
       mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
       Utils.setStatusBarTranslucent(this, true);
-//    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+      // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
       toolbar.setNavigationOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -119,7 +116,7 @@ public class MusicContainer extends AppCompatActivity
       tabLayout = (TabLayout) findViewById(R.id.tabs);
       musicRunningBar = (RelativeLayout) findViewById(R.id.music_running_bar);
       mFloatingActionButton
-              .setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#E64A19")));
+          .setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#E64A19")));
       bottomBarStatus.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -129,8 +126,7 @@ public class MusicContainer extends AppCompatActivity
               bottomBarStatus.setImageResource(R.drawable.icon_play);
             } else {
               PlayerService.getInstance().resume();
-              bottomBarStatus.setImageResource(
-                      R.drawable.icon_pause_circle_outline_white);
+              bottomBarStatus.setImageResource(R.drawable.icon_pause_circle_outline_white);
             }
           } else {
             finish();
@@ -164,11 +160,12 @@ public class MusicContainer extends AppCompatActivity
           bottomBarImage.buildDrawingCache();
           Bitmap bitmap = bottomBarImage.getDrawingCache();
           Palette palette = Palette.from(bitmap).generate();
-          intent.putExtra(Constants.STATUSBAR_COLOR, palette.getDarkMutedColor(Color.parseColor("#424242")));
+          intent.putExtra(Constants.STATUSBAR_COLOR,
+              palette.getDarkMutedColor(Color.parseColor("#424242")));
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             ActivityOptionsCompat options =
-                    ActivityOptionsCompat.makeSceneTransitionAnimation(MusicContainer.this, bottomBarImage,
-                            getResources().getString(R.string.transition_thumbnai_two));
+                ActivityOptionsCompat.makeSceneTransitionAnimation(MusicContainer.this,
+                    bottomBarImage, getResources().getString(R.string.transition_thumbnai_two));
             startActivity(intent, options.toBundle());
           } else {
             startActivity(intent);
@@ -178,53 +175,57 @@ public class MusicContainer extends AppCompatActivity
 
       setupViewPager(viewPager);
       tabLayout.setupWithViewPager(viewPager);
-        PlayerService.getInstance().setPlayerStatusUpdateLisitner(this);
+      PlayerService.getInstance().setPlayerStatusUpdateLisitner(this);
       mNavigationView.setItemIconTintList(null);
-      mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-        @Override
-        public boolean onNavigationItemSelected(MenuItem item) {
-          Intent intent;
-          switch (item.getItemId()) {
-            case R.id.equalizer:
-              intent = new Intent();
-              intent.setAction("android.media.action.DISPLAY_AUDIO_EFFECT_CONTROL_PANEL");
-              if ((intent.resolveActivity(getPackageManager()) != null)) {
-                startActivity(intent);
-              } else {
-                Toast.makeText(getApplicationContext(), getString(R.string.equalizer_not_supported), Toast.LENGTH_LONG).show();
+      mNavigationView
+          .setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem item) {
+              Intent intent;
+              switch (item.getItemId()) {
+                case R.id.equalizer:
+                  intent = new Intent();
+                  intent.setAction("android.media.action.DISPLAY_AUDIO_EFFECT_CONTROL_PANEL");
+                  if ((intent.resolveActivity(getPackageManager()) != null)) {
+                    startActivity(intent);
+                  } else {
+                    Toast.makeText(getApplicationContext(),
+                        getString(R.string.equalizer_not_supported), Toast.LENGTH_LONG).show();
+                  }
+                  return true;
+                case R.id.settings:
+                  intent = new Intent(MusicContainer.this, Settings.class);
+                  startActivity(intent);
+                  return true;
+                case R.id.share_app:
+                  intent = new Intent(android.content.Intent.ACTION_SEND);
+                  intent.setType("text/plain");
+                  intent.putExtra(android.content.Intent.EXTRA_TEXT,
+                      getString(R.string.share_app_message));
+                  startActivity(intent);
+                  return true;
+                case R.id.feedback:
+                  intent = new Intent(Intent.ACTION_SEND);
+                  String[] recipients = {"rakeshjnanagari@gmail.com"};
+                  intent.putExtra(Intent.EXTRA_EMAIL, recipients);
+                  intent.putExtra(Intent.EXTRA_SUBJECT, "Feedback and Suggestions");
+                  intent.setType("text/html");
+                  final PackageManager pm = getPackageManager();
+                  final List<ResolveInfo> matches = pm.queryIntentActivities(intent, 0);
+                  ResolveInfo best = null;
+                  for (final ResolveInfo info : matches)
+                    if (info.activityInfo.packageName.endsWith(".gm")
+                        || info.activityInfo.name.toLowerCase().contains("gmail"))
+                      best = info;
+                  if (best != null) {
+                    intent.setClassName(best.activityInfo.packageName, best.activityInfo.name);
+                  }
+                  startActivity(intent);
+                  return true;
               }
-              return true;
-            case R.id.settings:
-              intent = new Intent(MusicContainer.this, Settings.class);
-              startActivity(intent);
-              return true;
-            case R.id.share_app:
-              intent = new Intent(android.content.Intent.ACTION_SEND);
-              intent.setType("text/plain");
-              intent.putExtra(android.content.Intent.EXTRA_TEXT, getString(R.string.share_app_message));
-              startActivity(intent);
-              return true;
-            case R.id.feedback:
-              intent=new Intent(Intent.ACTION_SEND);
-              String[] recipients={"rakeshjnanagari@gmail.com"};
-              intent.putExtra(Intent.EXTRA_EMAIL, recipients);
-              intent.putExtra(Intent.EXTRA_SUBJECT,"Feedback and Suggestions");
-              intent.setType("text/html");
-              final PackageManager pm = getPackageManager();
-              final List<ResolveInfo> matches = pm.queryIntentActivities(intent, 0);
-              ResolveInfo best = null;
-              for(final ResolveInfo info : matches)
-                if (info.activityInfo.packageName.endsWith(".gm") || info.activityInfo.name.toLowerCase().contains("gmail"))
-                  best = info;
-              if (best != null) {
-                intent.setClassName(best.activityInfo.packageName, best.activityInfo.name);
-              }
-              startActivity(intent);
-              return true;
-          }
-          return false;
-        }
-      });
+              return false;
+            }
+          });
     } else {
       finish();
     }
@@ -335,7 +336,7 @@ public class MusicContainer extends AppCompatActivity
   protected void onDestroy() {
     super.onDestroy();
     isActivityDestroyed = true;
-    if(PlayerService.getInstance() != null) {
+    if (PlayerService.getInstance() != null) {
       PlayerService.getInstance().setPlayerStatusUpdateUnregister();
     }
     Log.d("debug", "destroy");
@@ -379,7 +380,7 @@ public class MusicContainer extends AppCompatActivity
           @Override
           public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
             int swipedPosition = viewHolder.getAdapterPosition();
-            if(null != PlayerService.getInstance()) {
+            if (null != PlayerService.getInstance()) {
               PlayerService.getInstance().deleteSongFromQueue(swipedPosition);
             } else {
               finish();
@@ -394,7 +395,7 @@ public class MusicContainer extends AppCompatActivity
   @Override
   public void playingSongStatus(com.rakesh.mobile.musicmasti.model.Queue song, boolean enableNext,
       boolean enablePrevious) {
-    if(null == PlayerService.getInstance()) {
+    if (null == PlayerService.getInstance()) {
       finish();
       return;
     }
@@ -406,8 +407,7 @@ public class MusicContainer extends AppCompatActivity
       if (!PlayerService.getInstance().isPlayerPlaying()) {
         bottomBarStatus.setImageResource(R.drawable.icon_play);
       } else {
-        bottomBarStatus.setImageResource(
-            R.drawable.icon_pause_circle_outline_white);
+        bottomBarStatus.setImageResource(R.drawable.icon_pause_circle_outline_white);
       }
       if (enableNext) {
         bottomBarSkipNext.setVisibility(View.VISIBLE);

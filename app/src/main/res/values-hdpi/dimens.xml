@@ -3,4 +3,5 @@
     <dimen name="text_size_small">11sp</dimen>
     <dimen name="text_size_medium">13sp</dimen>
     <dimen name="text_size_large">17sp</dimen>
+    <dimen name="dialog_min_width">260dp</dimen>
 </resources>

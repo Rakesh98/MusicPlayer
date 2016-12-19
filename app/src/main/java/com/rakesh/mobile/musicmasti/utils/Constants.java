@@ -19,7 +19,6 @@ public interface Constants {
     String STATUSBAR_COLOR = "STATUSBAR_COLOR";
     String FLOATING_BUTTON_COLOR = "FLOATING_BUTTON_COLOR";
     String PLAY_LIST_SELECTED = "PLAY_LIST_SELECTED";
-    String RECENTLY_PLAYED_KEY = "RECENTLY_PLAYED";
     String PACKAGE_NAME = "com.rakesh.mobile";
     String NOTIFICATION_PLAY_STATUS = ".notification.playstatus";
     String NOTIFICATION_NEXT = ".notification.next";

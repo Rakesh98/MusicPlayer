@@ -1,5 +1,18 @@
 package com.rakesh.mobile.musicmasti.view;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
+import com.rakesh.mobile.musicmasti.AppController;
+import com.rakesh.mobile.musicmasti.R;
+import com.rakesh.mobile.musicmasti.model.Song;
+import com.rakesh.mobile.musicmasti.utils.Configuration;
+import com.rakesh.mobile.musicmasti.utils.Constants;
+import com.rakesh.mobile.musicmasti.utils.SharedPreference;
+import com.rakesh.mobile.musicmasti.utils.StaticData;
+import com.rakesh.mobile.musicmasti.utils.Utils;
+import com.rakesh.mobile.musicmasti.utils.comparators.SongComparator;
+
 import android.Manifest;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
@@ -18,18 +31,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.Toast;
-
-import com.rakesh.mobile.musicmasti.R;
-import com.rakesh.mobile.musicmasti.model.Song;
-import com.rakesh.mobile.musicmasti.utils.Configuration;
-import com.rakesh.mobile.musicmasti.utils.Constants;
-import com.rakesh.mobile.musicmasti.utils.comparators.SongComparator;
-import com.rakesh.mobile.musicmasti.utils.SharedPreference;
-import com.rakesh.mobile.musicmasti.utils.StaticData;
-import com.rakesh.mobile.musicmasti.utils.Utils;
-
-import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * Created by rakesh.jnanagari on 24/06/16.
@@ -87,7 +88,7 @@ public class Splash extends AppCompatActivity {
   }
 
   private void initApp() {
-    if(getResources().getBoolean(R.bool.isTablet)) {
+    if (getResources().getBoolean(R.bool.isTablet)) {
       StaticData.toolBarHeight = (int) (112 * getResources().getDisplayMetrics().density);
     } else {
       StaticData.toolBarHeight = (int) (104 * getResources().getDisplayMetrics().density);
@@ -96,18 +97,15 @@ public class Splash extends AppCompatActivity {
 
   private void initPlayList() {
     if (mSharedPreference.containsKey(Constants.PLAY_LIST_SELECTED)) {
-      StaticData.setPlayListSelected(Utils.jsonToList(mSharedPreference.getSharedPref(Constants.PLAY_LIST_SELECTED)));
+      StaticData.setPlayListSelected(
+          Utils.jsonToList(mSharedPreference.getSharedPref(Constants.PLAY_LIST_SELECTED)));
     } else {
       StaticData.setPlayListSelected(new ArrayList<Integer>());
     }
   }
 
   private void initRecentlyPlayed() {
-    if (mSharedPreference.containsKey(Constants.RECENTLY_PLAYED_KEY)) {
-      StaticData.setRecentlyPlayed(Utils.jsonToList(mSharedPreference.getSharedPref(Constants.RECENTLY_PLAYED_KEY)));
-    } else {
-      StaticData.setRecentlyPlayed(new ArrayList<Integer>());
-    }
+    StaticData.setRecentlyPlayed(AppController.getInstance().mDBManager.getRecentlyPlayedList());
   }
 
   private void showPermissionDialog() {
@@ -168,7 +166,8 @@ public class Splash extends AppCompatActivity {
           song.setData(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)));
           song.setDuration(
               cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)));
-          song.setDateAdded(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATE_ADDED)));
+          song.setDateAdded(
+              cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATE_ADDED)));
           song.setRingTone(Boolean.parseBoolean(
               cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.IS_RINGTONE))));
           song.setSize(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.SIZE)));
@@ -176,10 +175,10 @@ public class Splash extends AppCompatActivity {
           song.setContentUri(
               Uri.parse(cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA))));
           Uri uri1 = MediaStore.Images.Media.INTERNAL_CONTENT_URI;
-//          song.setInternalUri(Uri.parse(cursor.getString(
-//              cursor.getColumnIndex(MediaStore.Images.Media.INTERNAL_CONTENT_URI.toString()))));
-//          song.setExternalUri(Uri.parse(cursor.getString(
-//              cursor.getColumnIndex(MediaStore.Images.Media.EXTERNAL_CONTENT_URI.toString()))));
+          // song.setInternalUri(Uri.parse(cursor.getString(
+          // cursor.getColumnIndex(MediaStore.Images.Media.INTERNAL_CONTENT_URI.toString()))));
+          // song.setExternalUri(Uri.parse(cursor.getString(
+          // cursor.getColumnIndex(MediaStore.Images.Media.EXTERNAL_CONTENT_URI.toString()))));
           StaticData.songList.add(song);
 
           Log.d("debug", "stop");
@@ -257,8 +256,10 @@ public class Splash extends AppCompatActivity {
     Configuration.allSongs = mSharedPreference.getSharedPrefBoolean(Constants.ALL_SONGS_KEY, true);
     Configuration.composers = mSharedPreference.getSharedPrefBoolean(Constants.COMPOSERS_KEY, true);
     Configuration.playlists = mSharedPreference.getSharedPrefBoolean(Constants.PLAYLIST_KEY, true);
-    Configuration.isShakeSongSkipEnabled = mSharedPreference.getSharedPrefBoolean(Constants.IS_SHAKE_SKIP_SONG_KEY, false);
-    Configuration.isHeadSetControlEnabled = mSharedPreference.getSharedPrefBoolean(Constants.IS_HEAD_SET_CONTROL_KEY, true);
+    Configuration.isShakeSongSkipEnabled =
+        mSharedPreference.getSharedPrefBoolean(Constants.IS_SHAKE_SKIP_SONG_KEY, false);
+    Configuration.isHeadSetControlEnabled =
+        mSharedPreference.getSharedPrefBoolean(Constants.IS_HEAD_SET_CONTROL_KEY, true);
     Configuration.sortType = mSharedPreference.getSharedPrefInt(Constants.SORT_KEY);
   }
 
