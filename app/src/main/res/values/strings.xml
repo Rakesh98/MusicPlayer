@@ -67,4 +67,10 @@
     <string name="create_new_playlist">Add new Playlist</string>
     <string name="playlist_name">Playlist Name</string>
     <string name="enter_playlist_name">Enter Playlist name</string>
+    <string name="select_play_list_error_message">Please select playlist or create new playlist</string>
+    <string name="create_play_list_error_message_one">Please enter playlist name</string>
+    <string name="create_play_list_error_message_two">Entered playlist already exists</string>
+    <string name="alert">Alert</string>
+    <string name="play_list_delete_warn_message">Are you sure of deleting %s from playlist?</string>
+    <string name="play_list_empty_message">Empty PlayList</string>
 </resources>

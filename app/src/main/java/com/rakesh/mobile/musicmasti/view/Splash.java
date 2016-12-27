@@ -102,6 +102,13 @@ public class Splash extends AppCompatActivity {
     } else {
       StaticData.setPlayListSelected(new ArrayList<Integer>());
     }
+
+    StaticData.setPlayListLibrary(AppController.getInstance().mDBManager.getPlayList());
+    if (StaticData.getPlayListLibrary().isEmpty()) {
+      StaticData.setPlayListNames(new ArrayList<String>());
+    } else {
+      StaticData.setPlayListNames(AppController.getInstance().mDBManager.getPlayListNames());
+    }
   }
 
   private void initRecentlyPlayed() {

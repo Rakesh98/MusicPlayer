@@ -21,6 +21,7 @@ import com.rakesh.mobile.musicmasti.utils.Constants;
 import com.rakesh.mobile.musicmasti.utils.comparators.AlbumComparator;
 import com.rakesh.mobile.musicmasti.utils.StaticData;
 import com.rakesh.mobile.musicmasti.utils.Utils;
+import com.rakesh.mobile.musicmasti.utils.comparators.PlayListComparator;
 import com.rakesh.mobile.musicmasti.view.HidingScrollListener;
 import com.rakesh.mobile.musicmasti.view.MusicContainer;
 import com.rakesh.mobile.musicmasti.view.adapters.AlbumAdapter;
@@ -51,7 +52,7 @@ public class Playlists extends Fragment {
         mMusicContainer = (MusicContainer) getActivity();
         albumList = new ArrayList<>();
         noDataText = (TextView) (view.findViewById(R.id.no_data));
-        setAlbumList();
+        setPlayList();
         if(albumList.isEmpty()) {
             noDataText.setVisibility(View.VISIBLE);
         }
@@ -115,47 +116,72 @@ public class Playlists extends Fragment {
         return view;
     }
 
-    private void setAlbumList() {
+//    private void setAlbumList() {
+//        Album album;
+//        HashMap<Integer, Album> albumMap;
+//        albumMap = new HashMap<>();
+//        Song song;
+//        List<Song> songList = setSongList();
+//        int length = songList.size();
+//        for(int i = 0; i < length; i++) {
+//            song = songList.get(i);
+//            album = albumMap.get(song.getAlbumId());
+//            if(null == album) {
+//                album = new Album();
+//                album.setAlbumId(song.getAlbumId());
+//                album.setTitle(song.getAlbum());
+//                album.setSubTitle(song.getComposer());
+//                album.setCount(1);
+//                album.setDateAdded(song.getDateAdded());
+//                albumMap.put(song.getAlbumId(), album);
+//            } else {
+//                album.setCount(album.getCount() + 1);
+//            }
+//        }
+//        albumList = new ArrayList<>(albumMap.values());
+//        Collections.sort(albumList, new AlbumComparator());
+//    }
+
+    private void setPlayList () {
         Album album;
-        HashMap<Integer, Album> albumMap;
-        albumMap = new HashMap<>();
-        Song song;
-        List<Song> songList = setSongList();
-        int length = songList.size();
-        for(int i = 0; i < length; i++) {
-            song = songList.get(i);
-            album = albumMap.get(song.getAlbumId());
-            if(null == album) {
-                album = new Album();
-                album.setAlbumId(song.getAlbumId());
-                album.setTitle(song.getAlbum());
-                album.setSubTitle(song.getComposer());
-                album.setCount(1);
-                album.setDateAdded(song.getDateAdded());
-                albumMap.put(song.getAlbumId(), album);
+        for (int i = 0; i < StaticData.getPlayListNames().size(); i++) {
+            album = new Album();
+            if (StaticData.getPlayListLibrary().get(i).size() > 0) {
+                album.setAlbumId(getAlbumId(StaticData.getPlayListLibrary().get(i).get(0)));
             } else {
-                album.setCount(album.getCount() + 1);
+                album.setAlbumId(0);
             }
+            album.setTitle(StaticData.getPlayListNames().get(i));
+            album.setCount(StaticData.getPlayListLibrary().get(i).size());
+            albumList.add(album);
         }
-        albumList = new ArrayList<>(albumMap.values());
-        Collections.sort(albumList, new AlbumComparator());
+        Collections.sort(albumList, new PlayListComparator());
     }
 
-    private List<Song> setSongList() {
-        ArrayList<Song> returnList = new ArrayList<>();
-        for(int i = 0; i < StaticData.getPlayListSelected().size(); i++) {
-            for (int j = 0; j < StaticData.songList.size(); j++) {
-                if (StaticData.getPlayListSelected().get(i) == StaticData.songList.get(j).getId()) {
-                    returnList.add(StaticData.songList.get(j));
-                }
+    private int getAlbumId (int songId) {
+        for (int i = 0; i < StaticData.songList.size(); i++) {
+            if (songId == StaticData.songList.get(i).getId()) {
+                return StaticData.songList.get(i).getAlbumId();
             }
         }
-        return returnList;
+        return 0;
     }
+
+//    private List<Song> setSongList() {
+//        ArrayList<Song> returnList = new ArrayList<>();
+//        for(int i = 0; i < StaticData.getPlayListSelected().size(); i++) {
+//            for (int j = 0; j < StaticData.songList.size(); j++) {
+//                if (StaticData.getPlayListSelected().get(i) == StaticData.songList.get(j).getId()) {
+//                    returnList.add(StaticData.songList.get(j));
+//                }
+//            }
+//        }
+//        return returnList;
+//    }
 
     public void updateList () {
         if (null != albumList && null != adapter) {
-            Collections.sort(albumList, new AlbumComparator());
+            Collections.sort(albumList, new PlayListComparator());
             adapter.notifyDataSetChanged();
         }
 

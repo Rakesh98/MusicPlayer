@@ -14,5 +14,5 @@
     <dimen name="song_count">20dp</dimen>
     <dimen name="queue_image_size">30dp</dimen>
     <dimen name="queue_close">30dp</dimen>
-    <dimen name="dialog_min_width">230dp</dimen>
+    <dimen name="dialog_min_width">210dp</dimen>
 </resources>

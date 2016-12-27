@@ -10,15 +10,19 @@
         style="@style/TextViewLarge"
         android:layout_gravity="center_horizontal"
         android:text="@string/select_playlist" />
-    <android.support.v7.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
 
-    </android.support.v7.widget.RecyclerView>
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
         android:background="@android:color/white" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/play_list_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp">
+
+    </android.support.v7.widget.RecyclerView>
 
     <Button
         android:id="@+id/create_new_playlist"

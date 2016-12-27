@@ -3,11 +3,13 @@ package com.rakesh.mobile.musicmasti.utils;
 import java.util.ArrayList;
 
 import com.rakesh.mobile.musicmasti.model.PlayListData;
+import com.rakesh.mobile.musicmasti.model.RecentlyPlayedData;
 import com.snappydb.DB;
 import com.snappydb.DBFactory;
 import com.snappydb.SnappydbException;
 
 import android.content.Context;
+import android.util.Log;
 
 /**
  * Created by rakesh.jnanagari on 17/12/16.
@@ -33,7 +35,7 @@ public class DBManager {
   public ArrayList<String> getPlayListNames() {
     ArrayList<String> returnList = new ArrayList<>();
     try {
-      String[] array = mSnappyDb.get(PLAYLIST_NAMES_KEY, String[].class);
+      String[] array = mSnappyDb.getArray(PLAYLIST_NAMES_KEY, String.class);
       for (int i = 0; i < array.length; i++) {
         returnList.add(array[i]);
       }
@@ -78,23 +80,19 @@ public class DBManager {
   public ArrayList<Integer> getRecentlyPlayedList() {
     ArrayList<Integer> returnList = new ArrayList<>();
     try {
-      int[] array = mSnappyDb.get(RECENTLY_PLAYED_KEY, int[].class);
-      for (int i = 0; i < array.length; i++) {
-        returnList.add(array[i]);
-      }
+      RecentlyPlayedData recentlyPlayedData = mSnappyDb.getObject(RECENTLY_PLAYED_KEY, RecentlyPlayedData.class);
+      return recentlyPlayedData.getRecentlyPlayedList();
     } catch (SnappydbException e) {
-
+      Log.i("", "");
     }
     return returnList;
   }
 
   public void setRecentlyPlayedList(ArrayList<Integer> recentlyPlayedList) {
     try {
-      int[] array = new int[recentlyPlayedList.size()];
-      for (int i = 0; i < recentlyPlayedList.size(); i++) {
-        array[i] = recentlyPlayedList.get(i);
-      }
-      mSnappyDb.put(RECENTLY_PLAYED_KEY, array);
+      RecentlyPlayedData recentlyPlayedData = new RecentlyPlayedData();
+      recentlyPlayedData.setRecentlyPlayedList(recentlyPlayedList);
+      mSnappyDb.put(RECENTLY_PLAYED_KEY, recentlyPlayedList);
     } catch (SnappydbException e) {
 
     }

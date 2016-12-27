@@ -7,16 +7,19 @@ import java.util.ArrayList;
  */
 
 public class PlayListData {
-    private ArrayList<ArrayList<Integer>> playList;
+  private ArrayList<ArrayList<Integer>> playList;
 
-    public PlayListData() {
-    }
+  public PlayListData() {}
 
-    public ArrayList<ArrayList<Integer>> getPlayList() {
-        return this.playList;
-    }
+  public PlayListData(ArrayList<ArrayList<Integer>> playList) {
+    this.playList = playList;
+  }
 
-    public void setPlayList(ArrayList<ArrayList<Integer>> playList) {
-        this.playList = playList;
-    }
+  public ArrayList<ArrayList<Integer>> getPlayList() {
+    return this.playList;
+  }
+
+  public void setPlayList(ArrayList<ArrayList<Integer>> playList) {
+    this.playList = playList;
+  }
 }

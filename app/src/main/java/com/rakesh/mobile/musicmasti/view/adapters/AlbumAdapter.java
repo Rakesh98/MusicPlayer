@@ -1,15 +1,32 @@
 package com.rakesh.mobile.musicmasti.view.adapters;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.rakesh.mobile.musicmasti.AppController;
+import com.rakesh.mobile.musicmasti.R;
+import com.rakesh.mobile.musicmasti.model.Album;
+import com.rakesh.mobile.musicmasti.model.Queue;
+import com.rakesh.mobile.musicmasti.model.Song;
+import com.rakesh.mobile.musicmasti.model.ViewHolder;
+import com.rakesh.mobile.musicmasti.utils.Configuration;
+import com.rakesh.mobile.musicmasti.utils.Constants;
+import com.rakesh.mobile.musicmasti.utils.StaticData;
+import com.rakesh.mobile.musicmasti.utils.Utils;
+import com.rakesh.mobile.musicmasti.view.PlayerService;
+import com.rakesh.mobile.musicmasti.view.SongList;
+
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.graphics.Palette;
 import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.RecyclerView;
@@ -20,28 +37,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.rakesh.mobile.musicmasti.R;
-import com.rakesh.mobile.musicmasti.model.Album;
-import com.rakesh.mobile.musicmasti.model.Queue;
-import com.rakesh.mobile.musicmasti.model.Song;
-import com.rakesh.mobile.musicmasti.model.ViewHolder;
-import com.rakesh.mobile.musicmasti.utils.Configuration;
-import com.rakesh.mobile.musicmasti.utils.Constants;
-import com.rakesh.mobile.musicmasti.utils.SharedPreference;
-import com.rakesh.mobile.musicmasti.utils.StaticData;
-import com.rakesh.mobile.musicmasti.utils.Utils;
-import com.rakesh.mobile.musicmasti.view.MusicContainer;
-import com.rakesh.mobile.musicmasti.view.PlayerService;
-import com.rakesh.mobile.musicmasti.view.SongList;
-import com.rakesh.mobile.musicmasti.view.Splash;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import android.widget.Toast;
 
 /**
  * Created by rakesh.jnanagari on 09/07/16.
@@ -132,38 +128,57 @@ public class AlbumAdapter extends RecyclerView.Adapter<ViewHolder> {
     holder.parentLayout.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        holder.thumbnail.buildDrawingCache();
-        Bitmap bitmap = holder.thumbnail.getDrawingCache();
-        Palette palette = Palette.from(bitmap).generate();
-        Intent intent = new Intent(context, SongList.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.putExtra(Constants.SONG_LIST_INTETN_KEY, intentType);
+        int index = holder.getAdapterPosition();
         if (isHeaderSet) {
-          intent.putExtra(Constants.ALBUM_ID_KEY,
-              albumList.get(holder.getAdapterPosition() - 1).getAlbumId());
-        } else {
-          intent.putExtra(Constants.ALBUM_ID_KEY,
-              albumList.get(holder.getAdapterPosition()).getAlbumId());
+          index = index - 1;
         }
+        if (albumList.get(index).getCount() != 0) {
+          holder.thumbnail.buildDrawingCache();
+          Bitmap bitmap = holder.thumbnail.getDrawingCache();
+          Palette palette = Palette.from(bitmap).generate();
+          Intent intent = new Intent(context, SongList.class);
+          intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+          intent.putExtra(Constants.SONG_LIST_INTETN_KEY, intentType);
+          if (intentType == Constants.PLAY_LIST_INTENT_VALUE) {
+            if (isHeaderSet) {
+              intent.putExtra(Constants.PLAYLIST_INDEX_KEY,
+                  getPlayListIndex(albumList.get(holder.getAdapterPosition() - 1).getTitle()));
+            } else {
+              intent.putExtra(Constants.PLAYLIST_INDEX_KEY,
+                  getPlayListIndex(albumList.get(holder.getAdapterPosition()).getTitle()));
+            }
+          }
+          if (isHeaderSet) {
+            intent.putExtra(Constants.ALBUM_ID_KEY,
+                albumList.get(holder.getAdapterPosition() - 1).getAlbumId());
+          } else {
+            intent.putExtra(Constants.ALBUM_ID_KEY,
+                albumList.get(holder.getAdapterPosition()).getAlbumId());
+          }
 
-        intent.putExtra(Constants.ITEM_COLOR_KEY,
-            palette.getDarkVibrantColor(Color.parseColor("#E0E0E0")));
-        intent.putExtra(Constants.FLOATING_BUTTON_COLOR,
-            palette.getMutedColor(Color.parseColor("#D84315")));
-        intent.putExtra(Constants.TOOLBAR_COLOR_KEY,
-            palette.getMutedColor(Color.parseColor("#757575")));
-        intent.putExtra(Constants.STATUSBAR_COLOR,
-            palette.getDarkMutedColor(Color.parseColor("#424242")));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-          ActivityOptionsCompat options =
-              ActivityOptionsCompat.makeSceneTransitionAnimation(context, holder.thumbnail,
-                  context.getResources().getString(R.string.transition_thumbnai));
-          context.startActivity(intent, options.toBundle());
+
+          intent.putExtra(Constants.ITEM_COLOR_KEY,
+              palette.getDarkVibrantColor(Color.parseColor("#E0E0E0")));
+          intent.putExtra(Constants.FLOATING_BUTTON_COLOR,
+              palette.getMutedColor(Color.parseColor("#D84315")));
+          intent.putExtra(Constants.TOOLBAR_COLOR_KEY,
+              palette.getMutedColor(Color.parseColor("#757575")));
+          intent.putExtra(Constants.STATUSBAR_COLOR,
+              palette.getDarkMutedColor(Color.parseColor("#424242")));
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            ActivityOptionsCompat options =
+                ActivityOptionsCompat.makeSceneTransitionAnimation(context, holder.thumbnail,
+                    context.getResources().getString(R.string.transition_thumbnai));
+            context.startActivity(intent, options.toBundle());
+          } else {
+            context.startActivity(intent);
+          }
+          if (!isHeaderSet) {
+            context.finish();
+          }
         } else {
-          context.startActivity(intent);
-        }
-        if (!isHeaderSet) {
-          context.finish();
+          Toast.makeText(context, context.getString(R.string.play_list_empty_message),
+              Toast.LENGTH_LONG).show();
         }
       }
     });
@@ -198,7 +213,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<ViewHolder> {
     dialog.getWindow().setAttributes(lp);
     dialog.show();
     if (intentType == Constants.PLAY_LIST_INTENT_VALUE) {
-      ((TextView)dialog.findViewById(R.id.remove)).setText(R.string.remove_from_playlist);
+      ((TextView) dialog.findViewById(R.id.remove)).setText(R.string.remove_from_playlist);
     }
     dialog.findViewById(R.id.enque_layout).setOnClickListener(new View.OnClickListener() {
       @Override
@@ -241,7 +256,27 @@ public class AlbumAdapter extends RecyclerView.Adapter<ViewHolder> {
       @Override
       public void onClick(View v) {
         if (intentType == Constants.PLAY_LIST_INTENT_VALUE) {
-
+          new AlertDialog.Builder(context).setTitle(context.getString(R.string.alert))
+              .setMessage(String.format(context.getString(R.string.play_list_delete_warn_message),
+                  albumList.get(position).getTitle()))
+              .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                  int index = getPlayListIndex(albumList.get(position).getTitle());
+                  StaticData.getPlayListNames().remove(index);
+                  StaticData.getPlayListLibrary().remove(index);
+                  AppController.getInstance().mDBManager
+                      .setPlayListNames(StaticData.getPlayListNames());
+                  AppController.getInstance().mDBManager
+                      .setPlayList(StaticData.getPlayListLibrary());
+                  albumList.remove(position);
+                  notifyDataSetChanged();
+                  dialog.dismiss();
+                }
+              }).setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                  dialog.dismiss();
+                }
+              }).setIcon(android.R.drawable.ic_dialog_alert).show();
         }
         dialog.dismiss();
       }
@@ -391,5 +426,14 @@ public class AlbumAdapter extends RecyclerView.Adapter<ViewHolder> {
       }
     }
     return uris;
+  }
+
+  private int getPlayListIndex(String playListName) {
+    for (int i = 0; i < StaticData.getPlayListNames().size(); i++) {
+      if (StaticData.getPlayListNames().get(i).equals(playListName)) {
+        return i;
+      }
+    }
+    return 0;
   }
 }

@@ -1,6 +1,7 @@
 package com.rakesh.mobile.musicmasti.utils;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
@@ -11,17 +12,24 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Display;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.rakesh.mobile.musicmasti.AppController;
 import com.rakesh.mobile.musicmasti.R;
 import com.rakesh.mobile.musicmasti.model.Song;
+import com.rakesh.mobile.musicmasti.view.adapters.SelectPlayListAdapter;
 
 import org.json.JSONObject;
 
@@ -243,11 +251,9 @@ public class Utils {
   }
 
   public static void addToPlayList(Song song, Context context) {
-    if (!StaticData.getPlayListSelected().contains(song.getId())) {
-      StaticData.getPlayListSelected().add(song.getId());
-    }
-    SharedPreference.getInstance(context).putSharedPref(Constants.PLAY_LIST_SELECTED,
-        Utils.listToString(StaticData.getPlayListSelected()));
+    List<Song> songList = new ArrayList<>();
+    songList.add(song);
+    addToPlayList(songList, context);
   }
 
   public static void addToPlayList(List<Song> songList, Context context) {
@@ -258,6 +264,90 @@ public class Utils {
     }
     SharedPreference.getInstance(context).putSharedPref(Constants.PLAY_LIST_SELECTED,
         Utils.listToString(StaticData.getPlayListSelected()));
+
+    if (StaticData.getPlayListNames().isEmpty()) {
+      createPlayListDialog(context, songList);
+    } else {
+      selectPlayListDialog(context, songList);
+    }
+  }
+
+  private static void selectPlayListDialog (final Context context, final List<Song> songList) {
+    final Dialog dialog = new Dialog(context);
+    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+    dialog.setContentView(R.layout.popup_select_playlist);
+    dialog.setCanceledOnTouchOutside(true);
+    dialog.setCancelable(true);
+    dialog.show();
+    RecyclerView mRecyclerView = (RecyclerView) dialog.findViewById(R.id.play_list_recycler_view);
+    final SelectPlayListAdapter mAdapter = new SelectPlayListAdapter();
+    mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+    mRecyclerView.setAdapter(mAdapter);
+    dialog.findViewById(R.id.create_new_playlist).setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        createPlayListDialog(context, songList);
+        dialog.dismiss();
+      }
+    });
+    dialog.findViewById(R.id.save).setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        int selectedPosition = mAdapter.selectedPosition;
+        if (-1 != selectedPosition) {
+          for (int i = songList.size()-1; i >= 0; i--) {
+            if (!StaticData.getPlayListLibrary().get(selectedPosition).contains(songList.get(i).getId())) {
+              StaticData.getPlayListLibrary().get(selectedPosition).add(songList.get(i).getId());
+            }
+          }
+          AppController.getInstance().mDBManager.setPlayList(StaticData.getPlayListLibrary());
+          dialog.dismiss();
+        } else {
+          Toast.makeText(context, context.getString(R.string.select_play_list_error_message), Toast.LENGTH_LONG).show();
+        }
+      }
+    });
+    dialog.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        dialog.dismiss();
+      }
+    });
+  }
+
+  private static void createPlayListDialog (final Context context, final List<Song> songList) {
+    final Dialog dialog = new Dialog(context);
+    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+    dialog.setContentView(R.layout.popup_create_new_playlist);
+    dialog.setCanceledOnTouchOutside(true);
+    dialog.setCancelable(true);
+    dialog.show();
+    dialog.findViewById(R.id.save).setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        String playListName = ((EditText)dialog.findViewById(R.id.play_list_name)).getText().toString();
+        if (playListName.isEmpty()) {
+          Toast.makeText(context, context.getString(R.string.create_play_list_error_message_one), Toast.LENGTH_LONG).show();
+        } else if (StaticData.getPlayListNames().contains(playListName)) {
+          Toast.makeText(context, context.getString(R.string.create_play_list_error_message_two), Toast.LENGTH_LONG).show();
+        } else {
+          StaticData.getPlayListNames().add(0, playListName);
+          StaticData.getPlayListLibrary().add(0, new ArrayList<Integer>());
+          for (int i = songList.size()-1; i >= 0; i--) {
+              StaticData.getPlayListLibrary().get(0).add(songList.get(i).getId());
+          }
+          AppController.getInstance().mDBManager.setPlayListNames(StaticData.getPlayListNames());
+          AppController.getInstance().mDBManager.setPlayList(StaticData.getPlayListLibrary());
+          dialog.dismiss();
+        }
+      }
+    });
+    dialog.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        dialog.dismiss();
+      }
+    });
   }
 
   public static void setStatusBarTranslucent(Activity activity, boolean makeTranslucent) {

@@ -18,7 +18,6 @@ public class AppController extends Application{
     @Override
     public void onCreate() {
         super.onCreate();
-
         mAppController = this;
         mDBManager = new DBManager(getApplicationContext());
     }

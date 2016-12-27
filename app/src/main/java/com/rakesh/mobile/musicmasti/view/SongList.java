@@ -1,5 +1,18 @@
 package com.rakesh.mobile.musicmasti.view;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.rakesh.mobile.musicmasti.AppController;
+import com.rakesh.mobile.musicmasti.R;
+import com.rakesh.mobile.musicmasti.model.Queue;
+import com.rakesh.mobile.musicmasti.model.Song;
+import com.rakesh.mobile.musicmasti.utils.Constants;
+import com.rakesh.mobile.musicmasti.utils.StaticData;
+import com.rakesh.mobile.musicmasti.utils.Utils;
+import com.rakesh.mobile.musicmasti.view.adapters.PlayQueueAdapter;
+
 import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
@@ -40,18 +53,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.rakesh.mobile.musicmasti.R;
-import com.rakesh.mobile.musicmasti.model.Queue;
-import com.rakesh.mobile.musicmasti.model.Song;
-import com.rakesh.mobile.musicmasti.utils.Constants;
-import com.rakesh.mobile.musicmasti.utils.StaticData;
-import com.rakesh.mobile.musicmasti.utils.Utils;
-import com.rakesh.mobile.musicmasti.view.adapters.PlayQueueAdapter;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by rakesh.jnanagari on 16/07/16.
  */
@@ -74,7 +75,7 @@ public class SongList extends AppCompatActivity implements PlayerService.PlayerS
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_music_play_container);
-    if(null != PlayerService.getInstance()) {
+    if (null != PlayerService.getInstance()) {
       Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
       setSupportActionBar(toolbar);
       getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -89,15 +90,14 @@ public class SongList extends AppCompatActivity implements PlayerService.PlayerS
       bottomBarStatus.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-          if(null != PlayerService.getInstance())
-          if (PlayerService.getInstance().isPlayerPlaying()) {
-            PlayerService.getInstance().pause();
-            bottomBarStatus.setImageResource(R.drawable.icon_play);
-          } else {
-            PlayerService.getInstance().resume();
-            bottomBarStatus.setImageResource(
-                    R.drawable.icon_pause_circle_outline_white);
-          }
+          if (null != PlayerService.getInstance())
+            if (PlayerService.getInstance().isPlayerPlaying()) {
+              PlayerService.getInstance().pause();
+              bottomBarStatus.setImageResource(R.drawable.icon_play);
+            } else {
+              PlayerService.getInstance().resume();
+              bottomBarStatus.setImageResource(R.drawable.icon_pause_circle_outline_white);
+            }
         }
       });
       bottomBarSkipNext.setOnClickListener(new View.OnClickListener() {
@@ -124,11 +124,12 @@ public class SongList extends AppCompatActivity implements PlayerService.PlayerS
           bottomBarImage.buildDrawingCache();
           Bitmap bitmap = bottomBarImage.getDrawingCache();
           Palette palette = Palette.from(bitmap).generate();
-          intent.putExtra(Constants.STATUSBAR_COLOR, palette.getDarkMutedColor(Color.parseColor("#424242")));
+          intent.putExtra(Constants.STATUSBAR_COLOR,
+              palette.getDarkMutedColor(Color.parseColor("#424242")));
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             ActivityOptionsCompat options =
-                    ActivityOptionsCompat.makeSceneTransitionAnimation(SongList.this, bottomBarImage,
-                            getResources().getString(R.string.transition_thumbnai_two));
+                ActivityOptionsCompat.makeSceneTransitionAnimation(SongList.this, bottomBarImage,
+                    getResources().getString(R.string.transition_thumbnai_two));
             startActivity(intent, options.toBundle());
           } else {
             startActivity(intent);
@@ -143,16 +144,16 @@ public class SongList extends AppCompatActivity implements PlayerService.PlayerS
       Point size = new Point();
       display.getSize(size);
       CollapsingToolbarLayout mCollapsingToolBar =
-              (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+          (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
       mCollapsingToolBar.setExpandedTitleColor(Color.TRANSPARENT);
       mCollapsingToolBar
-              .setContentScrimColor(getIntent().getIntExtra(Constants.TOOLBAR_COLOR_KEY, 0));
+          .setContentScrimColor(getIntent().getIntExtra(Constants.TOOLBAR_COLOR_KEY, 0));
       mCollapsingToolBar
-              .setStatusBarScrimColor(getIntent().getIntExtra(Constants.STATUSBAR_COLOR, 0));
-//      FloatingActionButton mFloatingActionButton =
-//              (FloatingActionButton) findViewById(R.id.floating_button);
-//      mFloatingActionButton.setBackgroundTintList(
-//              ColorStateList.valueOf(getIntent().getIntExtra(Constants.FLOATING_BUTTON_COLOR, 0)));
+          .setStatusBarScrimColor(getIntent().getIntExtra(Constants.STATUSBAR_COLOR, 0));
+      // FloatingActionButton mFloatingActionButton =
+      // (FloatingActionButton) findViewById(R.id.floating_button);
+      // mFloatingActionButton.setBackgroundTintList(
+      // ColorStateList.valueOf(getIntent().getIntExtra(Constants.FLOATING_BUTTON_COLOR, 0)));
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
         Window window = getWindow();
@@ -167,12 +168,12 @@ public class SongList extends AppCompatActivity implements PlayerService.PlayerS
       Utils.setBitMap(this, toolBarImage, albumId);
 
       setSongList();
-//      findViewById(R.id.floating_button).setOnClickListener(new View.OnClickListener() {
-//        @Override
-//        public void onClick(View v) {
-//          showOptionDialog(-1, false);
-//        }
-//      });
+      // findViewById(R.id.floating_button).setOnClickListener(new View.OnClickListener() {
+      // @Override
+      // public void onClick(View v) {
+      // showOptionDialog(-1, false);
+      // }
+      // });
       constructLayout();
 
       PlayerService.getInstance().setSongListUpdateLisitner(this);
@@ -181,14 +182,15 @@ public class SongList extends AppCompatActivity implements PlayerService.PlayerS
     }
   }
 
-  private void constructLayout () {
+  private void constructLayout() {
     LinearLayout songListLayout = (LinearLayout) findViewById(R.id.song_list_layout);
+    songListLayout.removeAllViews();
     LayoutInflater mLayoutInflator =
-            (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     songListLayout.removeAllViews();
     for (int i = 0; i < songList.size(); i++) {
       View view =
-              mLayoutInflator.inflate(R.layout.item_music_play_container, songListLayout, false);
+          mLayoutInflator.inflate(R.layout.item_music_play_container, songListLayout, false);
       ((TextView) view.findViewById(R.id.title)).setText(songList.get(i).getDisplayName());
 
       ((TextView) view.findViewById(R.id.index)).setText((i + 1) + ".");
@@ -197,10 +199,10 @@ public class SongList extends AppCompatActivity implements PlayerService.PlayerS
       } else {
         view.findViewById(R.id.sub_title).setVisibility(View.GONE);
       }
-      ((TextView) view.findViewById(R.id.time))
-              .setText(getString(R.string.duration) + " " + Utils.milliSecondsToTimer(Long.parseLong(songList.get(i).getDuration())));
+      ((TextView) view.findViewById(R.id.time)).setText(getString(R.string.duration) + " "
+          + Utils.milliSecondsToTimer(Long.parseLong(songList.get(i).getDuration())));
       view.findViewById(R.id.item_play_list_container)
-              .setBackgroundColor(getIntent().getIntExtra(Constants.ITEM_COLOR_KEY, 0));
+          .setBackgroundColor(getIntent().getIntExtra(Constants.ITEM_COLOR_KEY, 0));
       final int selectedSong = i;
       view.setOnClickListener(new View.OnClickListener() {
         @Override
@@ -270,7 +272,7 @@ public class SongList extends AppCompatActivity implements PlayerService.PlayerS
         for (int i = 0; i < StaticData.songList.size(); i++) {
           Song song = StaticData.songList.get(i);
           if (song.getAlbumId() == albumId) {
-            if(song.getComposer() != null && song.getComposer().contains("Lyrics")) {
+            if (song.getComposer() != null && song.getComposer().contains("Lyrics")) {
               String[] split = song.getComposer().split("Lyrics");
               composerName = split[0].replace("|", "");
             } else {
@@ -282,7 +284,8 @@ public class SongList extends AppCompatActivity implements PlayerService.PlayerS
         if (null != composerName) {
           for (int i = 0; i < StaticData.songList.size(); i++) {
             String tempComposer;
-            if (StaticData.songList.get(i).getComposer() != null && StaticData.songList.get(i).getComposer().contains("Lyrics")) {
+            if (StaticData.songList.get(i).getComposer() != null
+                && StaticData.songList.get(i).getComposer().contains("Lyrics")) {
               String[] split = StaticData.songList.get(i).getComposer().split("Lyrics");
               tempComposer = split[0].replace("|", "");
             } else {
@@ -303,8 +306,10 @@ public class SongList extends AppCompatActivity implements PlayerService.PlayerS
 
         break;
       case Constants.PLAY_LIST_INTENT_VALUE:
+        int index = getIntent().getIntExtra(Constants.PLAYLIST_INDEX_KEY, 0);
         for (int i = 0; i < StaticData.songList.size(); i++) {
-          if (StaticData.songList.get(i).getAlbumId() == albumId && StaticData.getPlayListSelected().contains(StaticData.songList.get(i).getId())) {
+          if (StaticData.getPlayListLibrary().get(index)
+              .contains(StaticData.songList.get(i).getId())) {
             songList.add(StaticData.songList.get(i));
           }
         }
@@ -344,7 +349,7 @@ public class SongList extends AppCompatActivity implements PlayerService.PlayerS
             queueList.add(queue);
           }
         }
-        if(null != PlayerService.getInstance()) {
+        if (null != PlayerService.getInstance()) {
           PlayerService.getInstance().addToQueue(queueList, false, -1);
         }
         dialog.dismiss();
@@ -365,7 +370,7 @@ public class SongList extends AppCompatActivity implements PlayerService.PlayerS
     dialog.findViewById(R.id.info_layout).setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        if(isParticularSong) {
+        if (isParticularSong) {
           showInfoDialog(songList.get(position));
         }
         dialog.dismiss();
@@ -374,12 +379,25 @@ public class SongList extends AppCompatActivity implements PlayerService.PlayerS
     dialog.findViewById(R.id.delete_layout).setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        deleteSongPosition = position;
-        if (ContextCompat.checkSelfPermission(SongList.this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-          showPermissionDialog();
-        } else {
-          deleteSong();
+        if (isParticularSong) {
+          deleteSongPosition = position;
+          if (Constants.PLAY_LIST_INTENT_VALUE == getIntent().getIntExtra(Constants.SONG_LIST_INTETN_KEY, Constants.ALBUM_INTENT_VALUE)) {
+            int playListIndex = getIntent().getIntExtra(Constants.PLAYLIST_INDEX_KEY, 0);
+            StaticData.getPlayListLibrary().get(playListIndex).remove(position);
+            songList.remove(position);
+            AppController.getInstance().mDBManager.setPlayList(StaticData.getPlayListLibrary());
+            constructLayout();
+            if (songList.isEmpty()) {
+              finish();
+            }
+          } else {
+            if (ContextCompat.checkSelfPermission(SongList.this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+              showPermissionDialog();
+            } else {
+              deleteSong();
+            }
+          }
         }
         dialog.dismiss();
       }
@@ -419,8 +437,7 @@ public class SongList extends AppCompatActivity implements PlayerService.PlayerS
       if (!PlayerService.getInstance().isPlayerPlaying()) {
         bottomBarStatus.setImageResource(R.drawable.icon_play);
       } else {
-        bottomBarStatus.setImageResource(
-            R.drawable.icon_pause_circle_outline_white);
+        bottomBarStatus.setImageResource(R.drawable.icon_pause_circle_outline_white);
       }
       if (enableNext) {
         bottomBarSkipNext.setVisibility(View.VISIBLE);
@@ -480,7 +497,7 @@ public class SongList extends AppCompatActivity implements PlayerService.PlayerS
           @Override
           public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
             int swipedPosition = viewHolder.getAdapterPosition();
-            if(null != PlayerService.getInstance()) {
+            if (null != PlayerService.getInstance()) {
               PlayerService.getInstance().deleteSongFromQueue(swipedPosition);
             } else {
               finish();
@@ -495,7 +512,7 @@ public class SongList extends AppCompatActivity implements PlayerService.PlayerS
   @Override
   protected void onDestroy() {
     super.onDestroy();
-    if(null != PlayerService.getInstance()) {
+    if (null != PlayerService.getInstance()) {
       PlayerService.getInstance().setSongListUnregister();
     }
   }
@@ -508,13 +525,15 @@ public class SongList extends AppCompatActivity implements PlayerService.PlayerS
     dialog.setCanceledOnTouchOutside(true);
     dialog.setCancelable(true);
     dialog.show();
-    ((TextView)dialog.findViewById(R.id.title)).setText(song.getTitle());
-    ((TextView)dialog.findViewById(R.id.artist)).setText(song.getArtist());
-    ((TextView)dialog.findViewById(R.id.composer)).setText(song.getAlbum());
-    ((TextView)dialog.findViewById(R.id.path)).setText(song.getContentUri().toString());
-    ((TextView)dialog.findViewById(R.id.album)).setText(song.getAlbum());
-    ((TextView)dialog.findViewById(R.id.duration)).setText(Utils.milliSecondsToTimer(Long.parseLong(song.getDuration())));
-    ((TextView)dialog.findViewById(R.id.size)).setText(Utils.convertBytesToMb(Long.parseLong(song.getSize())));
+    ((TextView) dialog.findViewById(R.id.title)).setText(song.getTitle());
+    ((TextView) dialog.findViewById(R.id.artist)).setText(song.getArtist());
+    ((TextView) dialog.findViewById(R.id.composer)).setText(song.getAlbum());
+    ((TextView) dialog.findViewById(R.id.path)).setText(song.getContentUri().toString());
+    ((TextView) dialog.findViewById(R.id.album)).setText(song.getAlbum());
+    ((TextView) dialog.findViewById(R.id.duration))
+        .setText(Utils.milliSecondsToTimer(Long.parseLong(song.getDuration())));
+    ((TextView) dialog.findViewById(R.id.size))
+        .setText(Utils.convertBytesToMb(Long.parseLong(song.getSize())));
     dialog.findViewById(R.id.ok_button).setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
@@ -559,21 +578,24 @@ public class SongList extends AppCompatActivity implements PlayerService.PlayerS
   }
 
   private void showPermissionDialog() {
-    AlertDialog dialog = new AlertDialog.Builder(this).setTitle(getString(R.string.permission_dialog_title))
+    AlertDialog dialog =
+        new AlertDialog.Builder(this).setTitle(getString(R.string.permission_dialog_title))
             .setMessage(getString(R.string.permission_dialog_message))
             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
               public void onClick(DialogInterface dialog, int which) {
                 ActivityCompat.requestPermissions(SongList.this,
-                        new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+                    new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
               }
             }).setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-      public void onClick(DialogInterface dialog, int which) {
-        deleteSongPosition = -1;
-        Toast.makeText(getApplicationContext(), getString(R.string.permission_denied_error_message),
-                Toast.LENGTH_LONG).show();
-      }
-    }).setIcon(android.R.drawable.ic_dialog_alert).show();
+              public void onClick(DialogInterface dialog, int which) {
+                deleteSongPosition = -1;
+                Toast
+                    .makeText(getApplicationContext(),
+                        getString(R.string.permission_denied_error_message), Toast.LENGTH_LONG)
+                    .show();
+              }
+            }).setIcon(android.R.drawable.ic_dialog_alert).show();
     dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
       @Override
       public void onCancel(DialogInterface dialog) {
@@ -583,16 +605,17 @@ public class SongList extends AppCompatActivity implements PlayerService.PlayerS
   }
 
   @Override
-  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+      @NonNull int[] grantResults) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     if (MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE == requestCode) {
       if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-        Toast.makeText(getApplicationContext(), getString(R.string.permission_granted_thank_message),
-                Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(),
+            getString(R.string.permission_granted_thank_message), Toast.LENGTH_SHORT).show();
         deleteSong();
       } else {
         Toast.makeText(getApplicationContext(), getString(R.string.permission_denied_error_message),
-                Toast.LENGTH_LONG).show();
+            Toast.LENGTH_LONG).show();
         finish();
       }
     }
